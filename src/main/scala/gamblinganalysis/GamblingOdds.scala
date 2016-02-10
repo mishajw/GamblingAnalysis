@@ -13,5 +13,5 @@ class GamblingOdds(val odds: Seq[Odd], val source: String) {
     getAllProbabilities.sum
   }
 
-  override def toString: String = s"GamblingOdds(${odds.mkString(" | ")})"
+  override def toString: String = s"GamblingOdds($source => ${odds.mkString(" | ")})"
 }
