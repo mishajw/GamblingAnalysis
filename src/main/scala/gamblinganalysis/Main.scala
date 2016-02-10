@@ -1,5 +1,6 @@
 package gamblinganalysis
 
+import gamblinganalysis.util.exceptions.ParseException
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
@@ -9,36 +10,61 @@ import org.jsoup.select.Elements
   */
 object Main {
 
-  private val url: String = "http://sports.williamhill.com/bet/en-gb/betting/y/5/tm/Football.html"
+  private val url: String = "http://www.oddschecker.com/football/english/fa-cup/peterborough-v-west-brom/to-qualify"
 
   val regexOdd = "(\\d+)/(\\d+)".r
+  val regexSimpleOdd = "(\\d+)".r
 
-  val eventSelector = ".rowLive, .rowOdd"
-  val oddSelector = ".eventprice"
+  val attrSource = "data-bk"
+  val attrOutcome = "data-bname"
+  val selTable = ".eventTable"
+  val selSource = s".eventTableHeader tr[$attrSource]"
+  val selOddRow = "tr[class=\"diff-row eventTableRow bc\"]"
+  val selOddCell: String = "td:not(.sel)"
 
   def main(args: Array[String]) = {
-    val doc = Jsoup.connect(url).get()
+    val doc = Jsoup.connect(url).userAgent("Mozilla").get()
 
-    val allOdds = makeArray(doc.select(eventSelector))
-        .flatMap(e => {
-          val odds = makeArray(e.select(oddSelector))
-              .flatMap(o => o.text() match {
-                case regexOdd(s1, s2) => Some(new Odd(s1.toInt, s2.toInt))
-                case x => println(x) ; None
-              }).toSeq
+    println(doc)
 
-          if (odds.size == 3)
-            Some(new GamblingOdds(odds))
-          else None
-        }).toSeq
-
-    println(allOdds
-      .map(o => s"$o => ${o.sumProbabilities})")
-      .mkString("\n"))
+    val allOdds = makeArray(doc.select(selTable)) match {
+      case table :: xs => getOddsFromTable(table)
+      case _ => throw new ParseException("Couldn't find table")
+    }
   }
 
-  private def makeArray(es: Elements) = es
+  def getOddsFromTable(table: Element) = {
+    val sources = getSourcesFromTable(table)
+    val odds = makeArray(table.select(selOddRow))
+        .map(oddRow => {
+          val outcome = oddRow.attr(attrOutcome)
+          getOddsFromRow(oddRow)
+              .map(_ match {
+                case Some(o) => Some(new Odd(o.gains, o.base, Some(outcome)))
+                case None => None
+              })
+        })
+
+    println(odds.mkString("\n"))
+  }
+
+  def getSourcesFromTable(table: Element): Seq[String] = {
+    makeArray(table.select(selSource))
+      .map(_.attr(attrSource))
+  }
+
+  def getOddsFromRow(row: Element): Seq[Option[Odd]] = {
+    makeArray(row.select(selOddCell))
+      .map(_.text() match {
+        case regexOdd(a, b) => Some(new Odd(a.toInt, b.toInt))
+        case regexSimpleOdd(a) => Some(new Odd(a.toInt, 1))
+        case _ => None
+      })
+  }
+
+  private def makeArray(es: Elements): Seq[Element] = es
     .toArray()
+    .toSeq
     .map(_.asInstanceOf[Element])
-    .asInstanceOf[Array[Element]]
+    .asInstanceOf[Seq[Element]]
 }

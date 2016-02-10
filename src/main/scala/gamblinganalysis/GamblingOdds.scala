@@ -1,6 +1,6 @@
 package gamblinganalysis
 
-class GamblingOdds(val odds: Seq[Odd]) {
+class GamblingOdds(val odds: Seq[Odd], val source: String) {
   def getAllPossibilities(toBet: Int = 1) = {
     odds.map(_.getPossibilities(toBet))
   }
