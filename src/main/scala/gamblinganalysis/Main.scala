@@ -12,15 +12,15 @@ object Main {
 
   private val url: String = "http://www.oddschecker.com/football/english/fa-cup/peterborough-v-west-brom/to-qualify"
 
-  val regexOdd = "(\\d+)/(\\d+)".r
-  val regexSimpleOdd = "(\\d+)".r
+  private val regexOdd = "(\\d+)/(\\d+)".r
+  private val regexSimpleOdd = "(\\d+)".r
 
-  val attrSource = "data-bk"
-  val attrOutcome = "data-bname"
-  val selTable = ".eventTable"
-  val selSource = s".eventTableHeader td[$attrSource]"
-  val selOddRow = "tr[class=\"diff-row eventTableRow bc\"]"
-  val selOddCell: String = "td:not(.sel, .wo)"
+  private val attrSource = "data-bk"
+  private val attrOutcome = "data-bname"
+  private val selTable = ".eventTable"
+  private val selSource = s".eventTableHeader td[$attrSource]"
+  private val selOddRow = "tr[class=\"diff-row eventTableRow bc\"]"
+  private val selOddCell = "td:not(.sel, .wo)"
 
   def main(args: Array[String]) = {
     val doc = Jsoup.connect(url).userAgent("Mozilla").get()
