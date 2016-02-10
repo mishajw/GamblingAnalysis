@@ -10,7 +10,7 @@ import org.jsoup.select.Elements
   */
 object OddsCheckerRetriever {
 
-  private val url: String = "http://www.oddschecker.com/football/english/fa-cup/peterborough-v-west-brom/to-qualify"
+  private val url: String = "http://www.oddschecker.com/football/english/fa-cup/west-brom-v-peterborough/to-qualify"
 
   private val regexOdd = "(\\d+)/(\\d+)".r
   private val regexSimpleOdd = "(\\d+)".r
@@ -39,7 +39,7 @@ object OddsCheckerRetriever {
           val outcome = oddRow.attr(attrOutcome)
           getOddsFromRow(oddRow)
               .map(_ match {
-                case Some(o) => Some(new Odd(o.gains, o.base, Some(outcome)))
+                case Some(o) => Some(new Odd(o.gains, o.base, outcome))
                 case None => None
               })
         })
@@ -56,8 +56,8 @@ object OddsCheckerRetriever {
   def getOddsFromRow(row: Element): Seq[Option[Odd]] = {
     makeArray(row.select(selOddCell))
       .map(_.text() match {
-        case regexOdd(a, b) => Some(new Odd(a.toInt, b.toInt))
-        case regexSimpleOdd(a) => Some(new Odd(a.toInt, 1))
+        case regexOdd(a, b) => Some(new Odd(a.toInt, b.toInt, ""))
+        case regexSimpleOdd(a) => Some(new Odd(a.toInt, 1, ""))
         case _ => None
       })
   }
