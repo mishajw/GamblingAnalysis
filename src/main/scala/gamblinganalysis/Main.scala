@@ -18,24 +18,25 @@ object Main {
   val attrSource = "data-bk"
   val attrOutcome = "data-bname"
   val selTable = ".eventTable"
-  val selSource = s".eventTableHeader tr[$attrSource]"
+  val selSource = s".eventTableHeader td[$attrSource]"
   val selOddRow = "tr[class=\"diff-row eventTableRow bc\"]"
-  val selOddCell: String = "td:not(.sel)"
+  val selOddCell: String = "td:not(.sel, .wo)"
 
   def main(args: Array[String]) = {
     val doc = Jsoup.connect(url).userAgent("Mozilla").get()
 
-    println(doc)
-
-    val allOdds = makeArray(doc.select(selTable)) match {
+    val allOdds = makeArray(doc.select(selTable)).toList match {
       case table :: xs => getOddsFromTable(table)
       case _ => throw new ParseException("Couldn't find table")
     }
+
+    println(allOdds.mkString("\n"))
   }
 
-  def getOddsFromTable(table: Element) = {
+  def getOddsFromTable(table: Element): Seq[GamblingOdds] = {
     val sources = getSourcesFromTable(table)
-    val odds = makeArray(table.select(selOddRow))
+
+    makeArray(table.select(selOddRow))
         .map(oddRow => {
           val outcome = oddRow.attr(attrOutcome)
           getOddsFromRow(oddRow)
@@ -44,8 +45,9 @@ object Main {
                 case None => None
               })
         })
-
-    println(odds.mkString("\n"))
+        .transpose
+        .zipWithIndex
+        .map { case (os, i) => new GamblingOdds(os.flatten, sources(i)) }
   }
 
   def getSourcesFromTable(table: Element): Seq[String] = {
