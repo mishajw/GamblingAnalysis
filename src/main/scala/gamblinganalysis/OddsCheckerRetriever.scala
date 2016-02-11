@@ -1,5 +1,7 @@
 package gamblinganalysis
 
+import java.net.SocketTimeoutException
+
 import gamblinganalysis.util.exceptions.ParseException
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
@@ -24,11 +26,16 @@ object OddsCheckerRetriever {
   private val selOddCell = "td:not(.sel, .wo)"
 
   def getOdds: Seq[OddsCollection] = {
-    val doc = Jsoup.connect(url).userAgent("Mozilla").get()
+    try {
+      val doc = Jsoup.connect(url).userAgent("Mozilla").get()
 
-    makeArray(doc.select(selTable)).toList match {
-      case table :: xs => getOddsFromTable(table)
-      case _ => throw new ParseException("Couldn't find table")
+      makeArray(doc.select(selTable)).toList match {
+        case table :: xs => getOddsFromTable(table)
+        case _ => throw new ParseException("Couldn't find table")
+      }
+    } catch {
+      case e: SocketTimeoutException =>
+        throw new ParseException("Couldn't parse because of failed internet connection")
     }
   }
 
