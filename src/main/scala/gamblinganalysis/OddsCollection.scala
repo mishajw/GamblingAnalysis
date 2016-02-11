@@ -11,12 +11,18 @@ class OddsCollection(val odds: Seq[Odd]) {
     odds.map(_.getProbability)
   }
 
+  def getNormalisedProbabilities = {
+    val probabilities: Seq[BigDecimal] = getAllProbabilities
+    val total = probabilities.sum
+    probabilities.map(p => p / total)
+  }
+
   def sumProbabilities = {
     getAllProbabilities.sum
   }
 
   def betSafely() = {
-    val allProbs = getAllProbabilities.map(_ * 100).map(_.setScale(2, RoundingMode.FLOOR))
+    val allProbs = getNormalisedProbabilities.map(_ * 100).map(_.setScale(2, RoundingMode.FLOOR))
     val gains = betWith(allProbs).map(_.setScale(2, RoundingMode.FLOOR))
 
     val minimumGain: BigDecimal = gains.min
