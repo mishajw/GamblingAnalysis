@@ -13,15 +13,15 @@ import org.jsoup.select.Elements
 object OddsCheckerRetriever {
 
   private val url: String =
-    "http://www.oddschecker.com/tennis/atp-rotterdam/hyeon-chung-v-viktor-troicki/winner"
+    "http://www.oddschecker.com/tennis/wta-st-petersburg/caroline-wozniacki-v-dominika-cibulkova/winner"
 
   private val regexOdd = "(\\d+)/(\\d+)".r
   private val regexSimpleOdd = "(\\d+)".r
 
-  private val attrSource = "data-bk"
+  private val attrSource = "title"
   private val attrOutcome = "data-bname"
   private val selTable = ".eventTable"
-  private val selSource = s".eventTableHeader td[$attrSource]"
+  private val selSource = s"td[data-bk] aside a"
   private val selOddRow = "tr[class=\"diff-row eventTableRow bc\"]"
   private val selOddCell = "td:not(.sel, .wo)"
 
