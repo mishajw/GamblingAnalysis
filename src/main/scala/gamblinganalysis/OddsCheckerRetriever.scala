@@ -11,7 +11,7 @@ import org.jsoup.select.Elements
 object OddsCheckerRetriever {
 
   private val url: String =
-    "http://www.oddschecker.com/tennis/wta-st-petersburg/monica-niculescu-v-timea-babos/winner"
+    "http://www.oddschecker.com/tennis/wta-st-petersburg/daria-kasatkina-v-laura-siegemund/winner"
 
   private val regexOdd = "(\\d+)/(\\d+)".r
   private val regexSimpleOdd = "(\\d+)".r
@@ -38,15 +38,25 @@ object OddsCheckerRetriever {
     makeArray(table.select(selOddRow))
         .map(oddRow => {
           val outcome = oddRow.attr(attrOutcome)
-          getOddsFromRow(oddRow)
+          val odds = getOddsFromRow(oddRow)
               .map(_ match {
-                case Some(o) => Some(new Odd(o.gains, o.base, outcome))
+                case Some((i1, i2)) => Some((i1, i2, outcome))
                 case None => None
               })
+
+          println(odds)
+          odds
         })
         .transpose
         .zipWithIndex
-        .map { case (os, i) => new GamblingOdds(os.flatten, sources(i)) }
+        .map {
+          case (os, i) =>
+            os.map {
+              case Some((i1, i2, outcome)) => Some(new Odd(i1, i2, outcome, sources(i)))
+              case None => None
+            }
+        }
+        .map(os => new GamblingOdds(os.flatten))
   }
 
   def getSourcesFromTable(table: Element): Seq[String] = {
@@ -54,11 +64,11 @@ object OddsCheckerRetriever {
       .map(_.attr(attrSource))
   }
 
-  def getOddsFromRow(row: Element): Seq[Option[Odd]] = {
+  def getOddsFromRow(row: Element): Seq[Option[(Int, Int)]] = {
     makeArray(row.select(selOddCell))
       .map(_.text() match {
-        case regexOdd(a, b) => Some(new Odd(a.toInt, b.toInt, ""))
-        case regexSimpleOdd(a) => Some(new Odd(a.toInt, 1, ""))
+        case regexOdd(a, b) => Some((a.toInt, b.toInt))
+        case regexSimpleOdd(a) => Some((a.toInt, 1))
         case _ => None
       })
   }

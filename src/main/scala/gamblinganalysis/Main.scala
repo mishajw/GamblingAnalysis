@@ -4,7 +4,7 @@ package gamblinganalysis
   * Created by misha on 10/02/16.
   */
 object Main {
-  def main(args: Array[String]) = {
+  def main(args: Array[String]): Unit = {
     val odds = OddsCheckerRetriever.getOdds
     println(odds.mkString("\n"))
 
