@@ -11,7 +11,7 @@ import org.jsoup.select.Elements
 object OddsCheckerRetriever {
 
   private val url: String =
-    "http://www.oddschecker.com/tennis/wta-st-petersburg/daria-kasatkina-v-laura-siegemund/winner"
+    "http://www.oddschecker.com/tennis/atp-rotterdam/hyeon-chung-v-viktor-troicki/winner"
 
   private val regexOdd = "(\\d+)/(\\d+)".r
   private val regexSimpleOdd = "(\\d+)".r
@@ -23,7 +23,7 @@ object OddsCheckerRetriever {
   private val selOddRow = "tr[class=\"diff-row eventTableRow bc\"]"
   private val selOddCell = "td:not(.sel, .wo)"
 
-  def getOdds: Seq[GamblingOdds] = {
+  def getOdds: Seq[OddsCollection] = {
     val doc = Jsoup.connect(url).userAgent("Mozilla").get()
 
     makeArray(doc.select(selTable)).toList match {
@@ -32,20 +32,17 @@ object OddsCheckerRetriever {
     }
   }
 
-  def getOddsFromTable(table: Element): Seq[GamblingOdds] = {
+  def getOddsFromTable(table: Element): Seq[OddsCollection] = {
     val sources = getSourcesFromTable(table)
 
     makeArray(table.select(selOddRow))
         .map(oddRow => {
           val outcome = oddRow.attr(attrOutcome)
-          val odds = getOddsFromRow(oddRow)
+          getOddsFromRow(oddRow)
               .map(_ match {
                 case Some((i1, i2)) => Some((i1, i2, outcome))
                 case None => None
               })
-
-          println(odds)
-          odds
         })
         .transpose
         .zipWithIndex
@@ -56,7 +53,7 @@ object OddsCheckerRetriever {
               case None => None
             }
         }
-        .map(os => new GamblingOdds(os.flatten))
+        .map(os => new OddsCollection(os.flatten))
   }
 
   def getSourcesFromTable(table: Element): Seq[String] = {

@@ -2,7 +2,7 @@ package gamblinganalysis
 
 import scala.math.BigDecimal.RoundingMode
 
-class GamblingOdds(val odds: Seq[Odd]) {
+class OddsCollection(val odds: Seq[Odd]) {
   def getAllPossibilities(toBet: Int = 1) = {
     odds.map(_.getPossibilities(toBet))
   }
@@ -19,13 +19,17 @@ class GamblingOdds(val odds: Seq[Odd]) {
     val allProbs = getAllProbabilities.map(_ * 100).map(_.setScale(2, RoundingMode.FLOOR))
     val gains = betWith(allProbs).map(_.setScale(2, RoundingMode.FLOOR))
 
+    val minimumGain: BigDecimal = gains.min
+
     println(
       s"From:      ${odds.map(_.source).mkString(", ")}\n" +
       s"Bet on:    ${odds.map(_.title).mkString(", ")}\n" +
       s"Odds:      ${odds.map(_.oddsString).mkString(", ")}\n" +
       s"Put on:    ${allProbs.mkString(", ")}\n" +
       s"Gives you: ${gains.mkString(", ")}\n" +
-      f"Investment return: ${(gains.min / allProbs.sum) * 100}%.2f%%")
+      f"Investment return: ${(minimumGain / allProbs.sum) * 100}%.2f%%")
+
+    minimumGain
   }
 
   def betWith(values: Seq[BigDecimal]): Seq[BigDecimal] = {
@@ -40,5 +44,5 @@ class GamblingOdds(val odds: Seq[Odd]) {
     }
   }
 
-  override def toString: String = s"GamblingOdds(${odds.mkString(" | ")})"
+  override def toString: String = s"OddsCollection(${odds.mkString(" | ")})"
 }

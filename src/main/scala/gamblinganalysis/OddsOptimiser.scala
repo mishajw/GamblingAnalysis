@@ -7,7 +7,7 @@ import scala.collection.mutable.ListBuffer
   * Created by misha on 10/02/16.
   */
 object OddsOptimiser {
-  def optimise(odds: Seq[GamblingOdds]): GamblingOdds = {
+  def optimise(odds: Seq[OddsCollection]): OddsCollection = {
     val oddGroups = mutable.HashMap[String, ListBuffer[Odd]]()
 
     odds.foreach(o => {
@@ -26,6 +26,6 @@ object OddsOptimiser {
 
     val completeOdds = sorted.map({ case (_, odd) => odd}).toSeq
 
-    new GamblingOdds(completeOdds)
+    new OddsCollection(completeOdds)
   }
 }

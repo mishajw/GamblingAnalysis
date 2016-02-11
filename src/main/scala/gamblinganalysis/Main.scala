@@ -6,12 +6,7 @@ package gamblinganalysis
 object Main {
   def main(args: Array[String]): Unit = {
     val odds = OddsCheckerRetriever.getOdds
-    println(odds.mkString("\n"))
-
-    println()
-
     val optimum = OddsOptimiser.optimise(odds)
-    println(s"\n$optimum => ${optimum.getAllProbabilities}")
 
     optimum.betSafely()
   }
