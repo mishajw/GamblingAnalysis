@@ -10,7 +10,8 @@ import org.jsoup.select.Elements
   */
 object OddsCheckerRetriever {
 
-  private val url: String = "http://www.oddschecker.com/football/english/fa-cup/west-brom-v-peterborough/to-qualify"
+  private val url: String =
+    "http://www.oddschecker.com/tennis/wta-st-petersburg/monica-niculescu-v-timea-babos/winner"
 
   private val regexOdd = "(\\d+)/(\\d+)".r
   private val regexSimpleOdd = "(\\d+)".r
