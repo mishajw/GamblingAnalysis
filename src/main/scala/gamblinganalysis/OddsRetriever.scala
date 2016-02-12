@@ -10,7 +10,7 @@ import org.jsoup.select.Elements
 /**
   * Created by misha on 08/02/16.
   */
-object OddsCheckerRetriever {
+object OddsRetriever {
 
   private val url: String =
     "http://www.oddschecker.com/tennis/wta-st-petersburg/caroline-wozniacki-v-dominika-cibulkova/winner"

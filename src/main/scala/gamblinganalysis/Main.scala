@@ -5,7 +5,7 @@ package gamblinganalysis
   */
 object Main {
   def main(args: Array[String]): Unit = {
-    val odds = OddsCheckerRetriever.getOdds
+    val odds = OddsRetriever.getOdds
     val optimum = OddsOptimiser.optimise(odds)
 
     optimum.betSafely()
