@@ -7,11 +7,12 @@ import gamblinganalysis.retriever.{GameRetriever, OddsRetriever}
   */
 object Main {
   def main(args: Array[String]): Unit = {
-//    val odds = OddsRetriever.getOdds
-//    val optimum = OddsOptimiser.optimise(odds)
-//
-//    optimum.betSafely()
+    GameRetriever.retrieve.foreach(g => {
+      val odds = OddsRetriever.getOdds(g)
+      val optimum = OddsOptimiser.optimise(odds)
 
-    println(GameRetriever.retrieve.mkString("\n"))
+      optimum.betSafely()
+      println("\n\n")
+    })
   }
 }
