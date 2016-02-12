@@ -1,7 +1,8 @@
-package gamblinganalysis
+package gamblinganalysis.retriever
 
 import java.net.SocketTimeoutException
 
+import gamblinganalysis.{Odd, OddsCollection}
 import gamblinganalysis.util.exceptions.ParseException
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
@@ -10,10 +11,10 @@ import org.jsoup.select.Elements
 /**
   * Created by misha on 08/02/16.
   */
-object OddsRetriever {
+object OddsRetriever extends Retriever {
 
   private val url: String =
-    "http://www.oddschecker.com/tennis/wta-st-petersburg/caroline-wozniacki-v-dominika-cibulkova/winner"
+    "http://www.oddschecker.com/football/spain/la-liga-primera/gijon-v-rayo-vallecano/winner"
 
   private val regexOdd = "(\\d+)/(\\d+)".r
   private val regexSimpleOdd = "(\\d+)".r
@@ -27,7 +28,7 @@ object OddsRetriever {
 
   def getOdds: Seq[OddsCollection] = {
     try {
-      val doc = Jsoup.connect(url).userAgent("Mozilla").get()
+      val doc = getHtml(url)
 
       makeArray(doc.select(selTable)).toList match {
         case table :: xs => getOddsFromTable(table)
@@ -76,10 +77,4 @@ object OddsRetriever {
         case _ => None
       })
   }
-
-  private def makeArray(es: Elements): Seq[Element] = es
-    .toArray()
-    .toSeq
-    .map(_.asInstanceOf[Element])
-    .asInstanceOf[Seq[Element]]
 }
