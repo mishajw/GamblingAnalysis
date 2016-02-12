@@ -24,16 +24,11 @@ object OddsRetriever extends Retriever {
   private val selOddCell = "td:not(.sel, .wo)"
 
   def getOdds(url: String): Seq[OddsCollection] = {
-    try {
-      val doc = getHtml(url)
+    val doc = getHtml(url)
 
-      makeArray(doc.select(selTable)).toList match {
-        case table :: xs => getOddsFromTable(table)
-        case _ => throw new ParseException("Couldn't find table")
-      }
-    } catch {
-      case e: SocketTimeoutException =>
-        throw new ParseException("Couldn't parse because of failed internet connection")
+    makeArray(doc.select(selTable)).toList match {
+      case table :: xs => getOddsFromTable(table)
+      case _ => throw new ParseException("Couldn't find table")
     }
   }
 

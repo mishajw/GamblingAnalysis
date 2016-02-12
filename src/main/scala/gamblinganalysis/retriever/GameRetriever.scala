@@ -10,13 +10,12 @@ object GameRetriever extends Retriever {
   private val sports = Seq("football", "tennis")
 
   private val selGameRow = "tr.match-on"
-  private val selGameLink = "td.betting"
-  private val selInPlay = s"$selGameLink a.in-play"
+  private val selInPlay = "td.betting a.in-play"
 
   def retrieve = {
     sports
       .map(baseUrl + _)
-      .map(getHtml)
+      .map(getHtml(_))
       .map(getRows)
       .map(filterForInPlay)
       .flatMap(getLinksFromRows)
