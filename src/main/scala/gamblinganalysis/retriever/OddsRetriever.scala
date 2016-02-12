@@ -13,9 +13,6 @@ import org.jsoup.select.Elements
   */
 object OddsRetriever extends Retriever {
 
-  private val url: String =
-    "http://www.oddschecker.com/football/spain/la-liga-primera/gijon-v-rayo-vallecano/winner"
-
   private val regexOdd = "(\\d+)/(\\d+)".r
   private val regexSimpleOdd = "(\\d+)".r
 
@@ -26,7 +23,7 @@ object OddsRetriever extends Retriever {
   private val selOddRow = "tr[class=\"diff-row eventTableRow bc\"]"
   private val selOddCell = "td:not(.sel, .wo)"
 
-  def getOdds: Seq[OddsCollection] = {
+  def getOdds(url: String): Seq[OddsCollection] = {
     try {
       val doc = getHtml(url)
 
