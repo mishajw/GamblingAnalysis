@@ -1,10 +1,8 @@
 package gamblinganalysis.retriever.odds
 
 import gamblinganalysis.retriever.Retriever
-import gamblinganalysis.util.exceptions.ParseException
 import gamblinganalysis.{Odd, OddsCollection}
 import org.jsoup.nodes.Element
-import org.jsoup.select.Elements
 
 /**
   * Created by misha on 15/02/16.
@@ -26,9 +24,16 @@ object SkybetRetriever extends Retriever {
     val html = getHtml(url)
 
     val tables = getTables(html)
-    val rows = tables.flatMap(getRowsFromTable)
+    val rows = tables.flatMap(t => {
+      getRowsFromTable(t)
+        .map(r => {
+          (t.attr("data-class-name"), r)
+        })
+    })
 
-    rows.flatMap(getOddsFromRow)
+    rows.flatMap { case (t, r) =>
+      getOddsFromRow(r, t)
+    }
   }
 
   def getTables(html: Element) = {
@@ -39,7 +44,7 @@ object SkybetRetriever extends Retriever {
     makeArray(table.select(selRow))
   }
 
-  def getOddsFromRow(row: Element): Option[OddsCollection] = {
+  def getOddsFromRow(row: Element, sport: String): Option[OddsCollection] = {
     // Parse teams
     row.attr("data-event-title") match {
       case regexTeams(t1, t2) =>
@@ -48,15 +53,15 @@ object SkybetRetriever extends Retriever {
           // Win/Draw/Lose
           case Seq(regexOdds(w1n, w1d), regexOdds(dn, dd), regexOdds(w2n, w2d)) =>
             Some(new OddsCollection(Seq(
-              new Odd(w1n.toInt, w1d.toInt, t1, source),
-              new Odd(dn.toInt, dd.toInt, "Draw", source),
-              new Odd(w2n.toInt, w2d.toInt, t2, source)
+              new Odd(w1n.toInt, w1d.toInt, t1, source, sport),
+              new Odd(dn.toInt, dd.toInt, "Draw", source, sport),
+              new Odd(w2n.toInt, w2d.toInt, t2, source, sport)
             )))
           // Win/Lose
           case Seq(regexOdds(w1n, w1d), regexOdds(w2n, w2d)) =>
             Some(new OddsCollection(Seq(
-              new Odd(w1n.toInt, w1d.toInt, t1, source),
-              new Odd(w2n.toInt, w2d.toInt, t2, source)
+              new Odd(w1n.toInt, w1d.toInt, t1, source, sport),
+              new Odd(w2n.toInt, w2d.toInt, t2, source, sport)
             )))
           case x =>
             println(s"Couldn't parse $x with teams $t1 and $t2")
