@@ -40,19 +40,30 @@ object SkybetRetriever extends Retriever {
   }
 
   def getOddsFromRow(row: Element): Option[OddsCollection] = {
+    // Parse teams
     row.attr("data-event-title") match {
       case regexTeams(t1, t2) =>
+        // Parse odds
         makeArray(row.select(selOdds)).map(_.text()) match {
+          // Win/Draw/Lose
           case Seq(regexOdds(w1n, w1d), regexOdds(dn, dd), regexOdds(w2n, w2d)) =>
             Some(new OddsCollection(Seq(
               new Odd(w1n.toInt, w1d.toInt, t1, source),
               new Odd(dn.toInt, dd.toInt, "Draw", source),
               new Odd(w2n.toInt, w2d.toInt, t2, source)
             )))
-          case _ =>
+          // Win/Lose
+          case Seq(regexOdds(w1n, w1d), regexOdds(w2n, w2d)) =>
+            Some(new OddsCollection(Seq(
+              new Odd(w1n.toInt, w1d.toInt, t1, source),
+              new Odd(w2n.toInt, w2d.toInt, t2, source)
+            )))
+          case x =>
+            println(s"Couldn't parse $x with teams $t1 and $t2")
             None
         }
-      case _ =>
+      case x =>
+        println(s"Couldn't parse $x")
         None
     }
   }
