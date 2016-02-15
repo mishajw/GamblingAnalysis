@@ -14,7 +14,12 @@ trait Retriever {
     try {
       Jsoup.connect(url).userAgent("Mozilla").get()
     } catch {
-      case e: SocketTimeoutException => getHtml(url, triesLeft - 1)
+      case e: SocketTimeoutException =>
+        if (triesLeft < 0) {
+          throw e
+        } else {
+          getHtml(url, triesLeft - 1)
+        }
     }
   }
 
