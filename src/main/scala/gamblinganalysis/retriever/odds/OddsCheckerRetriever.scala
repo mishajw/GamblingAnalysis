@@ -1,17 +1,15 @@
-package gamblinganalysis.retriever
+package gamblinganalysis.retriever.odds
 
-import java.net.SocketTimeoutException
-
-import gamblinganalysis.{Odd, OddsCollection}
+import gamblinganalysis.odds.{OddsCollection, Odd}
+import gamblinganalysis.retriever.Retriever
 import gamblinganalysis.util.exceptions.ParseException
-import org.jsoup.Jsoup
+import gamblinganalysis.OddsCollection
 import org.jsoup.nodes.Element
-import org.jsoup.select.Elements
 
 /**
   * Created by misha on 08/02/16.
   */
-object OddsRetriever extends Retriever {
+object OddsCheckerRetriever extends Retriever {
 
   private val regexOdd = "(\\d+)/(\\d+)".r
   private val regexSimpleOdd = "(\\d+)".r

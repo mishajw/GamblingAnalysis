@@ -1,4 +1,4 @@
-package gamblinganalysis
+package gamblinganalysis.odds
 
 /**
   * Created by misha on 09/02/16.

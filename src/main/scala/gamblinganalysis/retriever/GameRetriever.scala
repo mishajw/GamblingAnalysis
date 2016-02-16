@@ -7,7 +7,7 @@ import org.jsoup.nodes.Element
   */
 object GameRetriever extends Retriever {
   private val baseUrl = "http://www.oddschecker.com/"
-  private val sports = Seq("football", "tennis")
+  private val sports = Seq("football", "tennis", "snooker/welsh-open")
 
   private val selGameRow = "tr.match-on"
   private val selInPlay = "td.betting a.in-play"

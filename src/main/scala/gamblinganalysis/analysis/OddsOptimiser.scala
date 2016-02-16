@@ -1,4 +1,7 @@
-package gamblinganalysis
+package gamblinganalysis.analysis
+
+import gamblinganalysis.OddsCollection
+import gamblinganalysis.odds.{OddsCollection, Odd}
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer

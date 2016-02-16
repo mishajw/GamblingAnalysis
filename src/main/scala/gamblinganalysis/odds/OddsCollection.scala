@@ -1,4 +1,4 @@
-package gamblinganalysis
+package gamblinganalysis.odds
 
 import scala.math.BigDecimal.RoundingMode
 
