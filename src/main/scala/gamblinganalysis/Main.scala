@@ -10,17 +10,23 @@ import gamblinganalysis.util.exceptions.ParseException
   */
 object Main {
   def main(args: Array[String]): Unit = {
-    GameRetriever.retrieve.foreach(g => {
+    GameRetriever.retrieve.flatMap(g => {
       try {
         val odds = OddsCheckerRetriever.getOdds(g)
         val optimum = OddsOptimiser.optimise(odds)
-
-        optimum.betSafely()
-        println("")
+        Some(optimum, optimum.getInvestmentReturn)
       } catch {
-        case e: ParseException =>
+        case e: Exception => None
+        case e: ParseException => None
       }
     })
+      .sortBy { case (odds, ir) => ir }
+      .map { case (odds, ir) => odds }
+      .foreach(o => {
+        o.printSafeBet()
+        println()
+      })
+
 
 //    val odds = OddsRetriever.getOdds("http://www.oddschecker.com/tennis/atp-marseille/peter-gojowczyk-v-kenny-de-schepper/winner")
 //    val optimum = OddsOptimiser.optimise(odds)

@@ -21,9 +21,9 @@ class OddsCollection(val odds: Seq[Odd]) {
     getAllProbabilities.sum
   }
 
-  def betSafely() = {
-    val allProbs = getNormalisedProbabilities.map(_ * 100).map(_.setScale(2, RoundingMode.FLOOR))
-    val gains = betWith(allProbs).map(_.setScale(2, RoundingMode.FLOOR))
+  def printSafeBet() = {
+    val allProbabilities = getNormalisedProbabilities.map(_ * 100).map(_.setScale(2, RoundingMode.FLOOR))
+    val gains = betWith(allProbabilities).map(_.setScale(2, RoundingMode.FLOOR))
 
     val minimumGain: BigDecimal = gains.min
 
@@ -31,11 +31,14 @@ class OddsCollection(val odds: Seq[Odd]) {
       s"From:      ${odds.map(_.source).mkString(", ")}\n" +
       s"Bet on:    ${odds.map(_.title).mkString(", ")}\n" +
       s"Odds:      ${odds.map(_.oddsString).mkString(", ")}\n" +
-      s"Put on:    ${allProbs.mkString(", ")}\n" +
+      s"Put on:    ${allProbabilities.mkString(", ")}\n" +
       s"Gives you: ${gains.mkString(", ")}\n" +
-      f"Investment return: ${(minimumGain / allProbs.sum) * 100}%.2f%%")
+      f"Investment return: ${(minimumGain / allProbabilities.sum) * 100}%.2f%%")
+  }
 
-    minimumGain
+  def getInvestmentReturn = {
+    val probabilities: Seq[BigDecimal] = getNormalisedProbabilities
+    betWith(probabilities).min / probabilities.sum
   }
 
   def betWith(values: Seq[BigDecimal]): Seq[BigDecimal] = {
