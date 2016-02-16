@@ -1,8 +1,7 @@
 package gamblinganalysis.retriever.odds
 
-import gamblinganalysis.odds.{OddsCollection, Odd}
+import gamblinganalysis.odds.{Odd, OddsCollection}
 import gamblinganalysis.retriever.Retriever
-import gamblinganalysis.OddsCollection
 import org.jsoup.nodes.Element
 
 /**

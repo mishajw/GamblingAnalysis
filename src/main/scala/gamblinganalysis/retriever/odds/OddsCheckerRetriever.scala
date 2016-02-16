@@ -3,7 +3,6 @@ package gamblinganalysis.retriever.odds
 import gamblinganalysis.odds.{OddsCollection, Odd}
 import gamblinganalysis.retriever.Retriever
 import gamblinganalysis.util.exceptions.ParseException
-import gamblinganalysis.OddsCollection
 import org.jsoup.nodes.Element
 
 /**
