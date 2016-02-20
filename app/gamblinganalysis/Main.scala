@@ -9,11 +9,24 @@ import gamblinganalysis.retriever.odds.{OddsCheckerRetriever, SkybetRetriever}
 import gamblinganalysis.util.exceptions.ParseException
 import play.api.Logger
 
+import scala.util.Random
+
 /**
   * Created by misha on 20/02/16.
   */
 object Main {
   private val log = Logger(getClass)
+
+  val bookies = Seq(
+    "Totesport", "Winner", "Stan James", "Paddy Power", "BetBright", "Matchbook",
+    "10Bet", "Betfair", "Betdaq", "Boylesports", "Marathon Bet", "Unibet", "Ladbrokes",
+    "888sport", "Bet 365", "Sportingbet", "Bwin", "William Hill", "Bet Victor",
+    "Netbet UK", "Betway", "Betfair Sportsbook", "32Red Bet", "Sky Bet", "Coral",
+    "Betfred")
+
+  val names = Seq(
+    "Misha", "Hannah", "Jodie", "Mona", "Zoe", "Harry", "Joe", "Ali"
+  )
 
   def main(args: Array[String]) {
     runAccountsCollection()
@@ -83,11 +96,12 @@ object Main {
   def runAccountsCollection() = {
     log.info("Starting accounts collection")
 
-    val accounts = Seq(
-      new Account(OwnerFactory get "Misha", BigDecimal(7), BookieFactory get "Bet365"),
-      new Account(OwnerFactory get "Hannah", BigDecimal(7), BookieFactory get "Skybet"),
-      new Account(OwnerFactory get "Jodie", BigDecimal(7), BookieFactory get "Ladbrokes")
-    )
+    val accounts = bookies.map(b => {
+      new Account(
+        OwnerFactory get Random.shuffle(names).head,
+        BigDecimal(Random.nextDouble() * 10 + 10),
+        BookieFactory get b)
+    })
 
     val allOdds = GameRetriever.retrieve.flatMap(g => {
       try {
@@ -97,14 +111,14 @@ object Main {
         case e: ParseException => None
       }
     })
-      .sortBy(OddsOptimiser.optimise(_).getInvestmentReturn)
+      .sortBy(-OddsOptimiser.optimise(_).getInvestmentReturn)
 
     val accountsCollection = new AccountsCollection(accounts)
 
     allOdds.foreach(o => {
       accountsCollection.mostProfitable(o) match {
         case Some(bestPlan) =>
-          log.info(s"Buying plan with a profit of £${bestPlan.profit}: $bestPlan")
+          log.info(s"Buying plan with a profit of £${bestPlan.profit}:\n$bestPlan")
         case None =>
           log.info("Couldn't find a combination")
       }
