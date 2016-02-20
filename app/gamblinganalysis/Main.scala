@@ -1,6 +1,9 @@
 package gamblinganalysis
 
+import gamblinganalysis.accounts.{Account, BuyingPlan}
 import gamblinganalysis.analysis.OddsOptimiser
+import gamblinganalysis.factory.{GameFactory, GameOutcomeFactory, BookieFactory, OwnerFactory}
+import gamblinganalysis.odds.Odd
 import gamblinganalysis.retriever.GameRetriever
 import gamblinganalysis.retriever.odds.{OddsCheckerRetriever, SkybetRetriever}
 import gamblinganalysis.util.exceptions.ParseException
@@ -13,7 +16,7 @@ object Main {
   private val log = Logger(getClass)
 
   def main(args: Array[String]) {
-    runGameRetriever()
+    runBuyingPlan()
   }
 
   def runOddsChecker() = {
@@ -51,5 +54,29 @@ object Main {
 
     val results = SkybetRetriever.run()
     results.foreach(r => log.info(r.toString))
+  }
+
+  def runBuyingPlan() = {
+    log.info("Starting buying plan")
+
+    val game = GameFactory get Set("Win", "Draw", "Lose")
+    val bet365: Bookie = BookieFactory get "bet365"
+
+    val plan = new BuyingPlan(Seq(
+      (
+        new Account(OwnerFactory get "Misha", BigDecimal(7), bet365),
+        new Odd(3, 1, GameOutcomeFactory get ("Win", game), bet365)
+      ),
+      (
+        new Account(OwnerFactory get "Hannah", BigDecimal(10), bet365),
+        new Odd(2, 1, GameOutcomeFactory get ("Draw", game), bet365)
+      ),
+      (
+        new Account(OwnerFactory get "Jodie", BigDecimal(10), bet365),
+        new Odd(2, 1, GameOutcomeFactory get ("Lose", game), bet365)
+      )
+    ))
+
+    log.info(s"Profit: ${plan.profit}, Limiting account: ${plan.getLimitingAccount}")
   }
 }
