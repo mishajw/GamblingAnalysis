@@ -1,9 +1,11 @@
 package gamblinganalysis.odds
 
+import gamblinganalysis.Bookie
+
 /**
   * Created by misha on 09/02/16.
   */
-class Odd(val gains: Int, val base: Int, val title: String, val source: String, val sport: String = "") {
+class Odd(val gains: Int, val base: Int, val title: String, val bookie: Bookie, val sport: String = "") {
   def getPossibilities(toBet: Int): (BigDecimal, BigDecimal) = {
     (((toBet.toDouble / base.toDouble) * gains.toDouble) + toBet.toDouble, -toBet.toDouble)
   }
@@ -29,6 +31,6 @@ class Odd(val gains: Int, val base: Int, val title: String, val source: String, 
   }
 
   override def toString: String =
-    s"Odd($sport - $source - $title => $gains/$base)"
+    s"Odd($sport - $bookie - $title => $gains/$base)"
 
 }

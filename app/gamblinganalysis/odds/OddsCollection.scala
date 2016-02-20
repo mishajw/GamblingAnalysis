@@ -28,7 +28,7 @@ class OddsCollection(val odds: Seq[Odd]) {
     val minimumGain: BigDecimal = gains.min
 
     println(
-      s"From:      ${odds.map(_.source).mkString(", ")}\n" +
+      s"From:      ${odds.map(_.bookie).mkString(", ")}\n" +
       s"Bet on:    ${odds.map(_.title).mkString(", ")}\n" +
       s"Odds:      ${odds.map(_.oddsString).mkString(", ")}\n" +
       s"Put on:    ${allProbabilities.mkString(", ")}\n" +

@@ -1,6 +1,4 @@
-/**
-  * Created by misha on 20/02/16.
-  */
 package object gamblinganalysis {
-
+  case class Bookie(name: String)
+  case class AccountOwner(name: String)
 }

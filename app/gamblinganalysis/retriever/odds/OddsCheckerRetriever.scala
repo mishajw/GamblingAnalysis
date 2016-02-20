@@ -1,5 +1,6 @@
 package gamblinganalysis.retriever.odds
 
+import gamblinganalysis.factory.BookieFactory
 import gamblinganalysis.odds.{OddsCollection, Odd}
 import gamblinganalysis.retriever.Retriever
 import gamblinganalysis.util.exceptions.ParseException
@@ -46,7 +47,7 @@ object OddsCheckerRetriever extends Retriever {
         .map {
           case (os, i) =>
             os.map {
-              case Some((i1, i2, outcome)) => Some(new Odd(i1, i2, outcome, sources(i)))
+              case Some((i1, i2, outcome)) => Some(new Odd(i1, i2, outcome, BookieFactory get sources(i)))
               case None => None
             }
         }

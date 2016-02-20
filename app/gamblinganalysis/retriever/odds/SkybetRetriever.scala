@@ -1,5 +1,6 @@
 package gamblinganalysis.retriever.odds
 
+import gamblinganalysis.factory.BookieFactory
 import gamblinganalysis.odds.{Odd, OddsCollection}
 import gamblinganalysis.retriever.Retriever
 import org.jsoup.nodes.Element
@@ -8,7 +9,7 @@ import org.jsoup.nodes.Element
   * Created by misha on 15/02/16.
   */
 object SkybetRetriever extends Retriever {
-  private val source = "Skybet"
+  private val source = BookieFactory get "Skybet"
   private val baseUrl = "http://www.skybet.com/"
 
   private val sports = Seq("tennis")
