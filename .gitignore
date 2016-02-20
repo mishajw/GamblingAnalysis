@@ -1,3 +1,5 @@
-target/
-project/
-.idea/
+logs
+/target
+/.idea
+/conf/application.conf
+/project
