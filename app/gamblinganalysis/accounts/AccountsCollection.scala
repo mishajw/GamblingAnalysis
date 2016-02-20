@@ -9,17 +9,17 @@ import gamblinganalysis.odds.OddsCollection
   * Created by misha on 16/02/16.
   */
 class AccountsCollection(val accounts: Seq[Account]) {
-  def mostProfitable(odds: Seq[OddsCollection]): BuyingPlan = {
+
+  def mostProfitable(odds: Seq[OddsCollection]): Option[BuyingPlan] = {
     val sortedOdds: OddHeap = OddsOptimiser.getSortedOdds(odds)
 
     val allPossible = getAllPossibleOdds(sortedOdds)
     val allPlans = allPossible.flatMap(profitsOfCollection)
 
-//    println(allPossible.take(10).mkString("\n"))
-
-    println(allPlans.take(10).mkString("\n"))
-
-    allPlans.maxBy(_.profit)
+    if (allPlans.isEmpty)
+      None
+    else
+      Some(allPlans.maxBy(_.profit))
   }
 
   private def getAllPossibleOdds(oddHeap: OddHeap): Seq[OddsCollection] = {

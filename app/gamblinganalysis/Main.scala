@@ -89,10 +89,25 @@ object Main {
       new Account(OwnerFactory get "Jodie", BigDecimal(7), BookieFactory get "Ladbrokes")
     )
 
-    val odds = OddsCheckerRetriever.getOdds("http://www.oddschecker.com/tennis/atp-marseille/benoit-paire-v-marin-cilic/winner")
-    val accountsCollection = new AccountsCollection(accounts)
-    val bestPlan = accountsCollection.mostProfitable(odds)
+    val allOdds = GameRetriever.retrieve.flatMap(g => {
+      try {
+        Some(OddsCheckerRetriever.getOdds(g))
+      } catch {
+        case e: Exception => None
+        case e: ParseException => None
+      }
+    })
+      .sortBy(OddsOptimiser.optimise(_).getInvestmentReturn)
 
-    log.info(s"Buying plan with a profit of ${bestPlan.profit}: $bestPlan")
+    val accountsCollection = new AccountsCollection(accounts)
+
+    allOdds.foreach(o => {
+      accountsCollection.mostProfitable(o) match {
+        case Some(bestPlan) =>
+          log.info(s"Buying plan with a profit of £${bestPlan.profit}: $bestPlan")
+        case None =>
+          log.info("Couldn't find a combination")
+      }
+    })
   }
 }
