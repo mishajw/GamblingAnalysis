@@ -17,13 +17,23 @@ class BuyingPlan(val pairedOdds: Seq[(Account, Odd)]) {
   private lazy val oddsCollection = new OddsCollection(odds)
 
   def profit: BigDecimal = {
-    val (limitingAcc, limitingOdd) = getLimiters
-
-    val scale = limitingAcc.amount / limitingOdd.getProbability
+    val scale = getScale
     val betAmount = oddsCollection.getAllProbabilities.map(_ * scale)
     val results = oddsCollection.betWith(betAmount)
 
     results.min.setScale(2, RoundingMode.DOWN)
+  }
+
+  def getScale: BigDecimal = {
+    val (limitingAcc, limitingOdd) = getLimiters
+    limitingAcc.amount / limitingOdd.getProbability
+  }
+
+  def getAmounts: Seq[(Account, BigDecimal)] = {
+    val scale = getScale
+    pairedOdds.map { case (a, o) =>
+      (a, o.getProbability * scale)
+    }
   }
 
   def getLimitingAccount = getLimiters._1
