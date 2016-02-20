@@ -42,10 +42,10 @@ object OddsOptimiser {
 
     odds.foreach(o => {
       o.odds.foreach(o1 => {
-        if (oddGroups.contains(o1.title)) {
-          oddGroups(o1.title).+=(o1)
+        if (oddGroups.contains(o1.outcome)) {
+          oddGroups(o1.outcome).+=(o1)
         } else {
-          oddGroups(o1.title) = ListBuffer(o1)
+          oddGroups(o1.outcome) = ListBuffer(o1)
         }
       })
     })

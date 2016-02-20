@@ -1,6 +1,6 @@
 package gamblinganalysis.retriever.odds
 
-import gamblinganalysis.factory.BookieFactory
+import gamblinganalysis.factory.{GameFactory, GameOutcomeFactory, BookieFactory}
 import gamblinganalysis.odds.{OddsCollection, Odd}
 import gamblinganalysis.retriever.Retriever
 import gamblinganalysis.util.exceptions.ParseException
@@ -33,8 +33,11 @@ object OddsCheckerRetriever extends Retriever {
   def getOddsFromTable(table: Element): Seq[OddsCollection] = {
     val sources = getSourcesFromTable(table)
 
-    makeArray(table.select(selOddRow))
-        .map(oddRow => {
+    val rows = makeArray(table.select(selOddRow))
+
+    val game = GameFactory get rows.map(r => r.attr(attrOutcome)).toSet
+
+    rows.map(oddRow => {
           val outcome = oddRow.attr(attrOutcome)
           getOddsFromRow(oddRow)
               .map(_ match {
@@ -47,7 +50,7 @@ object OddsCheckerRetriever extends Retriever {
         .map {
           case (os, i) =>
             os.map {
-              case Some((i1, i2, outcome)) => Some(new Odd(i1, i2, outcome, BookieFactory get sources(i)))
+              case Some((i1, i2, outcome)) => Some(new Odd(i1, i2, GameOutcomeFactory get (outcome, game), BookieFactory get sources(i)))
               case None => None
             }
         }
