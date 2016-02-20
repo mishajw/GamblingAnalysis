@@ -78,11 +78,4 @@ object SkybetRetriever extends Retriever {
         None
     }
   }
-
-  def main(args: Array[String]) = {
-    log.info("Starting Skybet")
-
-    val results = run()
-    results.foreach(r => log.info(r.toString))
-  }
 }

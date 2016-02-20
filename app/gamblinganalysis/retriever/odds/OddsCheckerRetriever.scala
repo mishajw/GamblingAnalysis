@@ -73,13 +73,4 @@ object OddsCheckerRetriever extends Retriever {
         case _ => None
       })
   }
-
-  def main(args: Array[String]) {
-    log.info("Starting OddsChecker")
-
-    val odds = getOdds("http://www.oddschecker.com/tennis/atp-marseille/peter-gojowczyk-v-kenny-de-schepper/winner")
-    val optimum = OddsOptimiser.optimise(odds)
-
-    optimum.printSafeBet()
-  }
 }
