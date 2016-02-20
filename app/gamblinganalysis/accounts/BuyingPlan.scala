@@ -33,4 +33,6 @@ class BuyingPlan(val pairedOdds: Seq[(Account, Odd)]) {
       acc.amount / odd.getProbability
     }).head
   }
+
+  override def toString: String = s"BuyingPlan(${pairedOdds.mkString(" | ")})"
 }

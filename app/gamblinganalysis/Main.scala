@@ -1,6 +1,6 @@
 package gamblinganalysis
 
-import gamblinganalysis.accounts.{Account, BuyingPlan}
+import gamblinganalysis.accounts.{AccountsCollection, Account, BuyingPlan}
 import gamblinganalysis.analysis.OddsOptimiser
 import gamblinganalysis.factory.{GameFactory, GameOutcomeFactory, BookieFactory, OwnerFactory}
 import gamblinganalysis.odds.Odd
@@ -16,7 +16,7 @@ object Main {
   private val log = Logger(getClass)
 
   def main(args: Array[String]) {
-    runBuyingPlan()
+    runAccountsCollection()
   }
 
   def runOddsChecker() = {
@@ -78,5 +78,21 @@ object Main {
     ))
 
     log.info(s"Profit: ${plan.profit}, Limiting account: ${plan.getLimitingAccount}")
+  }
+
+  def runAccountsCollection() = {
+    log.info("Starting accounts collection")
+
+    val accounts = Seq(
+      new Account(OwnerFactory get "Misha", BigDecimal(7), BookieFactory get "Bet365"),
+      new Account(OwnerFactory get "Hannah", BigDecimal(7), BookieFactory get "Skybet"),
+      new Account(OwnerFactory get "Jodie", BigDecimal(7), BookieFactory get "Ladbrokes")
+    )
+
+    val odds = OddsCheckerRetriever.getOdds("http://www.oddschecker.com/tennis/atp-marseille/benoit-paire-v-marin-cilic/winner")
+    val accountsCollection = new AccountsCollection(accounts)
+    val bestPlan = accountsCollection.mostProfitable(odds)
+
+    log.info(s"Buying plan with a profit of ${bestPlan.profit}: $bestPlan")
   }
 }
