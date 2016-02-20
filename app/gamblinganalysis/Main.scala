@@ -13,7 +13,7 @@ object Main {
   private val log = Logger(getClass)
 
   def main(args: Array[String]) {
-    runOddsChecker()
+    runGameRetriever()
   }
 
   def runOddsChecker() = {
@@ -38,7 +38,7 @@ object Main {
         case e: ParseException => None
       }
     })
-      .sortBy { case (odds, ir) => ir }
+      .sortBy { case (odds, ir) => -ir }
       .map { case (odds, ir) => odds }
       .foreach(o => {
         o.printSafeBet()
