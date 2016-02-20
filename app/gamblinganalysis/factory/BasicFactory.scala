@@ -13,5 +13,5 @@ trait BasicFactory[T] {
     existing(name)
   }
 
-  abstract def newType(name: String): T
+  def newType(name: String): T
 }
