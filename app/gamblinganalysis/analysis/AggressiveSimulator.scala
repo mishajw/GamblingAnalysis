@@ -29,24 +29,30 @@ object AggressiveSimulator {
 
   def run(): Unit = {
     val allOdds = getAllOdds
-    val accountsCollection = generateAccounts()
-    val allProfits = run(accountsCollection, allOdds)
 
-    accountsCollection.accounts.foreach(a => log.info(a.toString))
+    for (acc <- 10 to 10 ; money <- 100 to 500 by 25) {
+      if (money / 10 > acc) {
+        val accountsCollection = generateAccounts(acc, money)
+        val allProfits = run(accountsCollection, allOdds)
 
-    log.info(s"Profits: ${allProfits.mkString(", ")}")
-    log.info(s"Total of ${allProfits.sum} across ${allProfits.size} arbs")
+        log.info(s"Accounts: $acc")
+        log.info(s"Money: $money")
+        log.info(s"Profits: ${allProfits.mkString(", ")}")
+        log.info(s"Total of ${allProfits.sum} across ${allProfits.size} arbs")
+        log.info(s"Return of ${(allProfits.sum / money) * 100}%")
+
+        println
+      }
+    }
   }
 
   private def run(accountsCollection: AccountsCollection, odds: Seq[Seq[OddsCollection]]): Seq[BigDecimal] = {
-    var allProfits = ListBuffer[BigDecimal]()
+    val allProfits = ListBuffer[BigDecimal]()
 
     odds.foreach(o => {
       accountsCollection.mostProfitable(o) match {
         case Some(bestPlan) =>
           val profit: BigDecimal = bestPlan.profit
-          log.info(s"Can make: $profit")
-
           if (profit > 0) {
             allProfits += profit
 
@@ -55,7 +61,6 @@ object AggressiveSimulator {
             }
           }
         case None =>
-          log.info("Couldn't find a combination")
       }
     })
 
@@ -73,13 +78,13 @@ object AggressiveSimulator {
     }).sortBy(-OddsOptimiser.optimise(_).getInvestmentReturn)
   }
 
-  private def generateAccounts(amount: Int = 10, money: BigDecimal = 200): AccountsCollection = {
+  private def generateAccounts(amount: Int, money: BigDecimal): AccountsCollection = {
     if (money / 10 < amount) {
       throw new IllegalArgumentException("Can't deposit less than £10 in each account.")
     }
 
     val accounts =
-      Stream.continually(Random.shuffle(bookies))
+      Stream.continually(bookies)
         .flatten
         .take(amount)
         .map(b => {

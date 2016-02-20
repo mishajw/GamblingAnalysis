@@ -41,8 +41,12 @@ class OddsCollection(val odds: Seq[Odd]) {
   }
 
   def getInvestmentReturn = {
-    val probabilities: Seq[BigDecimal] = getNormalisedProbabilities
-    betWith(probabilities).min / probabilities.sum
+    if (odds.nonEmpty) {
+      val probabilities: Seq[BigDecimal] = getNormalisedProbabilities
+      betWith(probabilities).min / probabilities.sum
+    } else {
+      BigDecimal(0)
+    }
   }
 
   def betWith(values: Seq[BigDecimal]): Seq[BigDecimal] = {
