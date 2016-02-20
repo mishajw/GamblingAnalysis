@@ -1,8 +1,12 @@
 package gamblinganalysis.odds
 
+import play.api.Logger
+
 import scala.math.BigDecimal.RoundingMode
 
 class OddsCollection(val odds: Seq[Odd]) {
+  private val log = Logger(getClass)
+
   def getAllPossibilities(toBet: Int = 1) = {
     odds.map(_.getPossibilities(toBet))
   }
@@ -27,7 +31,7 @@ class OddsCollection(val odds: Seq[Odd]) {
 
     val minimumGain: BigDecimal = gains.min
 
-    println(
+    log.info("Odds report:\n" +
       s"From:      ${odds.map(_.bookie).mkString(", ")}\n" +
       s"Bet on:    ${odds.map(_.outcome).mkString(", ")}\n" +
       s"Odds:      ${odds.map(_.oddsString).mkString(", ")}\n" +

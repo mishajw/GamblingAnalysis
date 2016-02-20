@@ -4,11 +4,14 @@ import gamblinganalysis.factory.{GameOutcomeFactory, GameFactory, BookieFactory}
 import gamblinganalysis.odds.{Odd, OddsCollection}
 import gamblinganalysis.retriever.Retriever
 import org.jsoup.nodes.Element
+import play.api.Logger
 
 /**
   * Created by misha on 15/02/16.
   */
 object SkybetRetriever extends Retriever {
+  private val log = Logger(getClass())
+
   private val source = BookieFactory get "Skybet"
   private val baseUrl = "http://www.skybet.com/"
 
@@ -74,5 +77,12 @@ object SkybetRetriever extends Retriever {
         println(s"Couldn't parse $x")
         None
     }
+  }
+
+  def main(args: Array[String]) = {
+    log.info("Starting Skybet")
+
+    val results = run()
+    results.foreach(r => log.info(r.toString))
   }
 }

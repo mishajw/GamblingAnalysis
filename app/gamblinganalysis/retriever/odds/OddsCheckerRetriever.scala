@@ -1,15 +1,18 @@
 package gamblinganalysis.retriever.odds
 
+import gamblinganalysis.analysis.OddsOptimiser
 import gamblinganalysis.factory.{GameFactory, GameOutcomeFactory, BookieFactory}
 import gamblinganalysis.odds.{OddsCollection, Odd}
-import gamblinganalysis.retriever.Retriever
+import gamblinganalysis.retriever.{GameRetriever, Retriever}
 import gamblinganalysis.util.exceptions.ParseException
 import org.jsoup.nodes.Element
+import play.api.Logger
 
 /**
   * Created by misha on 08/02/16.
   */
 object OddsCheckerRetriever extends Retriever {
+  private val log = Logger(getClass)
 
   private val regexOdd = "(\\d+)/(\\d+)".r
   private val regexSimpleOdd = "(\\d+)".r
@@ -69,5 +72,14 @@ object OddsCheckerRetriever extends Retriever {
         case regexSimpleOdd(a) => Some((a.toInt, 1))
         case _ => None
       })
+  }
+
+  def main(args: Array[String]) {
+    log.info("Starting OddsChecker")
+
+    val odds = getOdds("http://www.oddschecker.com/tennis/atp-marseille/peter-gojowczyk-v-kenny-de-schepper/winner")
+    val optimum = OddsOptimiser.optimise(odds)
+
+    optimum.printSafeBet()
   }
 }
