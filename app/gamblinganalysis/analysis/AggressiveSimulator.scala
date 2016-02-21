@@ -30,19 +30,20 @@ object AggressiveSimulator {
   def run(): Unit = {
     val allOdds = getAllOdds
 
-    for (acc <- 10 to 10 ; money <- 100 to 500 by 25) {
-      if (money / 10 > acc) {
-        val accountsCollection = generateAccounts(acc, money)
-        val allProfits = run(accountsCollection, allOdds)
+    val acc = 25
+    val money = acc * 10
 
-        log.info(s"Accounts: $acc")
-        log.info(s"Money: $money")
-        log.info(s"Profits: ${allProfits.mkString(", ")}")
-        log.info(s"Total of ${allProfits.sum} across ${allProfits.size} arbs")
-        log.info(s"Return of ${(allProfits.sum / money) * 100}%")
+    if (money / 10 >= acc) {
+      val accountsCollection = generateAccounts(acc, money)
+      val allProfits = run(accountsCollection, allOdds)
 
-        println
-      }
+      log.info(s"Accounts: $acc")
+      log.info(s"Money: $money")
+      log.info(s"Profits: ${allProfits.mkString(", ")}")
+      log.info(s"Total of ${allProfits.sum} across ${allProfits.size} arbs")
+      log.info(s"Return of ${(allProfits.sum / money) * 100}%")
+
+      println
     }
   }
 

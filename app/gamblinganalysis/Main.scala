@@ -16,7 +16,7 @@ object Main {
   private val log = Logger(getClass)
 
   def main(args: Array[String]) {
-    runAccountsCollection()
+    runGameRetriever()
   }
 
   def runOddsChecker() = {
