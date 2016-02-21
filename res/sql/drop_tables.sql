@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS bookie;
+DROP TABLE IF EXISTS account;
+DROP TABLE IF EXISTS account_transaction;
