@@ -5,16 +5,14 @@ import scalikejdbc._
 
 object GeneralDBHandler extends BaseDBHandler {
   def fillWithDefault() = {
-    bookies.map(b => {
+    bookies map (b =>
       sql"""
            INSERT INTO bookie(name) VALUES ($b)
-         """.update.apply()
-    })
+         """.update.apply())
 
-    users.map(u => {
+    users map (u =>
       sql"""
            INSERT INTO user(name) VALUES ($u)
-        """.update.apply()
-    })
+        """.update.apply())
   }
 }
