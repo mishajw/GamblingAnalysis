@@ -16,7 +16,7 @@ object Main {
   private val log = Logger(getClass)
 
   def main(args: Array[String]) {
-    runGameRetriever()
+    runAggressiveSimulator()
   }
 
   def runOddsChecker() = {
@@ -80,9 +80,9 @@ object Main {
     log.info(s"Profit: ${plan.profit}, Limiting account: ${plan.getLimitingAccount}")
   }
 
-  def runAccountsCollection() = {
+  def runAggressiveSimulator() = {
     log.info("Starting accounts collection")
 
-    AggressiveSimulator.run
+    AggressiveSimulator.run()
   }
 }
