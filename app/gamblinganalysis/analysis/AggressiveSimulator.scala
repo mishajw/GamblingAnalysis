@@ -6,6 +6,7 @@ import gamblinganalysis.odds.OddsCollection
 import gamblinganalysis.retriever.GameRetriever
 import gamblinganalysis.retriever.odds.OddsCheckerRetriever
 import gamblinganalysis.util.exceptions.ParseException
+import gamblinganalysis.{bookies, users}
 import play.api.Logger
 
 import scala.collection.mutable.ListBuffer
@@ -17,17 +18,6 @@ object AggressiveSimulator {
   private val log = Logger(getClass)
 
   private val minumumAmount = BigDecimal(1)
-
-  private val bookies = Seq(
-    "Totesport", "Winner", "Stan James", "Paddy Power", "BetBright", "Matchbook",
-    "10Bet", "Betfair", "Betdaq", "Boylesports", "Marathon Bet", "Unibet", "Ladbrokes",
-    "888sport", "Bet 365", "Sportingbet", "Bwin", "William Hill", "Bet Victor",
-    "Netbet UK", "Betway", "Betfair Sportsbook", "32Red Bet", "Sky Bet", "Coral",
-    "Betfred")
-
-  private val names = Seq(
-    "Misha", "Hannah", "Jodie", "Mona", "Zoe", "Harry", "Joe", "Ali"
-  )
 
   def run(): Unit = {
     val allOdds = getAllOdds
@@ -92,7 +82,7 @@ object AggressiveSimulator {
         .take(amount)
         .map(b => {
           new Account(
-            OwnerFactory get Random.shuffle(names).head,
+            OwnerFactory get Random.shuffle(users).head,
             money / amount,
             BookieFactory get b)
         })
