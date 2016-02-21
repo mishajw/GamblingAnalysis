@@ -1,8 +1,17 @@
 package gamblinganalysis.util.db
 
-/**
-  * Created by misha on 21/02/16.
-  */
-class UserDBHandler {
+import scalikejdbc._
+
+object UserDBHandler extends BaseDBHandler {
+  def test() = {
+    println("Starting test")
+
+    val results: List[Map[String, Any]] = sql"""
+        SELECT * FROM user
+    """.map(_.toMap).list.apply()
+
+    println(results)
+  }
+
 
 }

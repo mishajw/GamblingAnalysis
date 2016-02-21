@@ -1,8 +1,20 @@
 package gamblinganalysis.util.db
 
-/**
-  * Created by misha on 21/02/16.
-  */
-class GeneralDBHandler {
+import gamblinganalysis.{bookies, users}
+import scalikejdbc._
 
+object GeneralDBHandler extends BaseDBHandler {
+  def fillWithDefault() = {
+    bookies.map(b => {
+      sql"""
+           INSERT INTO bookie(name) VALUES ($b)
+         """.update.apply()
+    })
+
+    users.map(u => {
+      sql"""
+           INSERT INTO user(name) VALUES ($u)
+        """.update.apply()
+    })
+  }
 }
