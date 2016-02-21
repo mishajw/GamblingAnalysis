@@ -16,21 +16,23 @@ object AggressiveSimulator {
 
   private val log = Logger(getClass)
 
-  val bookies = Seq(
+  private val minumumAmount = BigDecimal(1)
+
+  private val bookies = Seq(
     "Totesport", "Winner", "Stan James", "Paddy Power", "BetBright", "Matchbook",
     "10Bet", "Betfair", "Betdaq", "Boylesports", "Marathon Bet", "Unibet", "Ladbrokes",
     "888sport", "Bet 365", "Sportingbet", "Bwin", "William Hill", "Bet Victor",
     "Netbet UK", "Betway", "Betfair Sportsbook", "32Red Bet", "Sky Bet", "Coral",
     "Betfred")
 
-  val names = Seq(
+  private val names = Seq(
     "Misha", "Hannah", "Jodie", "Mona", "Zoe", "Harry", "Joe", "Ali"
   )
 
   def run(): Unit = {
     val allOdds = getAllOdds
 
-    val acc = 25
+    val acc = 10
     val money = acc * 10
 
     if (money / 10 >= acc) {
@@ -54,7 +56,7 @@ object AggressiveSimulator {
       accountsCollection.mostProfitable(o) match {
         case Some(bestPlan) =>
           val profit: BigDecimal = bestPlan.profit
-          if (profit > 0) {
+          if (profit > minumumAmount) {
             allProfits += profit
 
             bestPlan.getAmounts.foreach { case (acc, amount) =>
