@@ -25,7 +25,9 @@ class OddsCollection(val odds: Seq[Odd]) {
     getAllProbabilities.sum
   }
 
-  def printSafeBet() = {
+  def printSafeBet(): Unit = {
+    if (odds.isEmpty) return
+
     val allProbabilities = getNormalisedProbabilities.map(_ * 100).map(_.setScale(2, RoundingMode.FLOOR))
     val gains = betWith(allProbabilities).map(_.setScale(2, RoundingMode.FLOOR))
 
