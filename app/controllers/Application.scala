@@ -4,7 +4,7 @@ import gamblinganalysis.odds.OddsCollection
 import org.json4s._
 import org.json4s.jackson.JsonMethods
 
-import gamblinganalysis.analysis.OddsOptimiser
+import gamblinganalysis.analysis.{BuyingPlan, OddsOptimiser}
 import gamblinganalysis.retriever.GameRetriever
 import gamblinganalysis.retriever.odds.OddsCheckerRetriever
 import gamblinganalysis.util.exceptions.ParseException
@@ -29,15 +29,15 @@ object Application extends Controller {
 
     val json = JObject(List(
       "oddsCollection" ->
-        JArray(bestOdds.toList.map(parseOddsCollection))
+        JArray(bestOdds.toList.map(parseBuyingPlan))
     ))
 
     Ok(JsonMethods.pretty(JsonMethods.render(json)))
   }
 
-  private def parseOddsCollection(oc: OddsCollection) = {
+  private def parseBuyingPlan(plan: BuyingPlan) = {
     JObject(List(
-      "odds" -> JArray(oc.odds.toList.map(o => {
+      "odds" -> JArray(plan.odds.toList.map(o => {
         JObject(List(
           "numerator" -> JInt(o.gains),
           "denominator" -> JInt(o.base),
@@ -45,7 +45,7 @@ object Application extends Controller {
           "outcome" -> JString(o.outcome)
         ))
       })),
-      "roi" -> JDecimal(oc.getInvestmentReturn)
+      "roi" -> JDecimal(plan.roi)
     ))
   }
 }

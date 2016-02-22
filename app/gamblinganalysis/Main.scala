@@ -1,10 +1,9 @@
 package gamblinganalysis
 
 import gamblinganalysis.accounts.Account
-import gamblinganalysis.analysis.{AggressiveSimulator, OddsOptimiser}
+import gamblinganalysis.analysis.{BuyingPlan, AggressiveSimulator, OddsOptimiser}
 import gamblinganalysis.factory.{BookieFactory, GameFactory, GameOutcomeFactory, UserFactory}
 import gamblinganalysis.odds.Odd
-import gamblinganalysis.plans.FullPlan
 import gamblinganalysis.retriever.GameRetriever
 import gamblinganalysis.retriever.odds.{OddsCheckerRetriever, SkybetRetriever}
 import gamblinganalysis.util.db.{GeneralDBHandler, UserDBHandler}
@@ -18,8 +17,9 @@ object Main {
   private val log = Logger(getClass)
 
   def main(args: Array[String]) {
-    GeneralDBHandler.reset()
-    println(UserDBHandler.users.mkString("\n"))
+//    GeneralDBHandler.reset()
+//    println(UserDBHandler.users.mkString("\n"))
+    runGameRetriever()
   }
 
   def runOddsChecker() = {
@@ -37,10 +37,10 @@ object Main {
     GameRetriever.retrieve.flatMap(g => {
       try {
         val odds = OddsCheckerRetriever.getOdds(g)
+        println(odds.odds.mkString("\n"))
         val optimum = OddsOptimiser.optimise(odds)
         Some(optimum, optimum.roi)
       } catch {
-        case e: Exception => None
         case e: ParseException => None
       }
     })
@@ -64,16 +64,16 @@ object Main {
     val game = GameFactory get Set("Win", "Draw", "Lose")
     val bet365: Bookie = BookieFactory get "bet365"
 
-    val plan = new FullPlan(Seq(
-      LinkedOdd(
+    val plan = new BuyingPlan(Seq(
+      (
         new Odd(3, 1, GameOutcomeFactory get ("Win", game), bet365),
         new Account(UserFactory get "Misha", BigDecimal(7), bet365)
       ),
-      LinkedOdd(
+      (
         new Odd(2, 1, GameOutcomeFactory get ("Draw", game), bet365),
         new Account(UserFactory get "Hannah", BigDecimal(10), bet365)
       ),
-      LinkedOdd(
+      (
         new Odd(2, 1, GameOutcomeFactory get ("Lose", game), bet365),
         new Account(UserFactory get "Jodie", BigDecimal(10), bet365)
       )

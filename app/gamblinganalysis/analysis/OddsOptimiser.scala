@@ -2,7 +2,6 @@ package gamblinganalysis.analysis
 
 import gamblinganalysis.GameOutcome
 import gamblinganalysis.odds.{Odd, OddsCollection}
-import gamblinganalysis.plans.{ValuedPlan, ValuedOdd}
 
 /**
   * Created by misha on 10/02/16.
@@ -17,8 +16,8 @@ object OddsOptimiser {
     * @param odds odds to choose from
     * @return odds collection of best odds
     */
-  def optimise(odds: OddsCollection): ValuedPlan = {
-    val topOdds = getSortedOdds(odds) map { case (_, o :: os) => o }
+  def optimise(odds: OddsCollection): BuyingPlan = {
+    val topOdds = getSortedOdds(odds) map { case (_, os) => os.head }
     planFromOdds(topOdds.toSeq)
   }
 
@@ -28,14 +27,14 @@ object OddsOptimiser {
     * @param odds odds to use
     * @return the plan (keeps coming up again)
     */
-  def planFromOdds(odds: Seq[Odd]): ValuedPlan = {
+  def planFromOdds(odds: Seq[Odd]): BuyingPlan = {
     val totalProbabilities = odds.map(_.getProbability).sum
 
     val amounts = odds map { o =>
-      ValuedOdd(o, (o.getProbability / totalProbabilities) * defaultBetAmount)
+      (o, (o.getProbability * totalProbabilities) * defaultBetAmount)
     }
 
-    new ValuedPlan(amounts)
+    new BuyingPlan(amounts)
   }
 
   /**
@@ -47,7 +46,7 @@ object OddsOptimiser {
   def getSortedOdds(odds: OddsCollection): Map[GameOutcome, Seq[Odd]] = {
     val oddGroups = odds.groupedOutcome()
     oddGroups map { case (outcome, os) =>
-      outcome -> os.sortBy(-_.getProbability)
+      outcome -> os.sortBy(_.getProbability)
     }
   }
 }

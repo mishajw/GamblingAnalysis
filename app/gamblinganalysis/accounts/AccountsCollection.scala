@@ -1,27 +1,25 @@
 package gamblinganalysis.accounts
 
 import gamblinganalysis.Bookie
-import gamblinganalysis.analysis.OddsOptimiser
+import gamblinganalysis.analysis.{BuyingPlan, OddsOptimiser}
 import gamblinganalysis.odds.{Odd, OddsCollection}
-import gamblinganalysis.plans.{FullPlan, LinkedOdd, LinkedPlan}
 
 /**
   * Created by misha on 16/02/16.
   */
 class AccountsCollection(val accounts: Seq[Account]) {
 
-  def mostProfitable(odds: OddsCollection): Option[FullPlan] = {
+  def mostProfitable(odds: OddsCollection): Option[BuyingPlan] = {
     val sortedOdds: Seq[Seq[Odd]] =
       (OddsOptimiser.getSortedOdds(odds) map { case (_, os) => os }).toSeq
 
     val allPossible = getAllPossibleOdds(sortedOdds)
     val allPlans = allPossible.flatMap(profitsOfCollection)
-    val fullPlans = allPlans.map(_.asFullPlan)
 
     if (allPlans.isEmpty)
       None
     else
-      Some(fullPlans.maxBy(_.roi))
+      Some(allPlans.maxBy(_.roi))
   }
 
   private def getAllPossibleOdds(oddHeap: Seq[Seq[Odd]]): Seq[OddsCollection] = {
@@ -41,7 +39,7 @@ class AccountsCollection(val accounts: Seq[Account]) {
     }
   }
 
-  private def profitsOfCollection (oddsCollection: OddsCollection): Option[LinkedPlan] = {
+  private def profitsOfCollection (oddsCollection: OddsCollection): Option[BuyingPlan] = {
     val paired = oddsCollection.odds.map(o => {
       getBestAccountForBookie(o.bookie) match {
         case Some(a) => Some(a, o)
@@ -52,8 +50,8 @@ class AccountsCollection(val accounts: Seq[Account]) {
     if (paired.length != paired.flatten.length)
       None
     else
-      Some(new LinkedPlan(paired.flatten map { case (acc, odd) =>
-        LinkedOdd(odd, acc)
+      Some(new BuyingPlan(paired.flatten map { case (acc, odd) =>
+        (odd, acc)
       }))
   }
 

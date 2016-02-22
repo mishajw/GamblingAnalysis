@@ -1,3 +1,6 @@
+import gamblinganalysis.accounts.Account
+import gamblinganalysis.odds.Odd
+
 package object gamblinganalysis {
   case class Bookie(name: String)
   case class User(name: String)
@@ -15,4 +18,15 @@ package object gamblinganalysis {
   val users = Seq(
     "Misha", "Hannah", "Jodie", "Mona", "Zoe", "Harry", "Joe", "Ali"
   )
+
+
+  /**
+    * Used so we can have multiple constructors that takes lists
+    * (ffs scala)
+    */
+  case class OddMoney(list: Seq[(Odd, BigDecimal)])
+  case class OddAccount(list: Seq[(Odd, Account)])
+
+  implicit def om(list: Seq[(Odd, BigDecimal)]) = OddMoney(list)
+  implicit def oa(list: Seq[(Odd, Account)]) = OddAccount(list)
 }

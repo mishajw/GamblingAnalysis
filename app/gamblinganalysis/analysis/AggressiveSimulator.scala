@@ -3,7 +3,6 @@ package gamblinganalysis.analysis
 import gamblinganalysis.accounts.{Account, AccountsCollection}
 import gamblinganalysis.factory.{BookieFactory, UserFactory}
 import gamblinganalysis.odds.OddsCollection
-import gamblinganalysis.plans.FullOdd
 import gamblinganalysis.retriever.GameRetriever
 import gamblinganalysis.retriever.odds.OddsCheckerRetriever
 import gamblinganalysis.util.exceptions.ParseException
@@ -50,8 +49,8 @@ object AggressiveSimulator {
           if (profit > minimumAmount) {
             allProfits += profit
 
-            bestPlan.oddPairs foreach { case FullOdd(odd, acc, amount) =>
-              acc.amount -= amount
+            bestPlan.pairs foreach { pair =>
+              pair.account.get.amount -= pair.money.get
             }
           }
         case None =>
