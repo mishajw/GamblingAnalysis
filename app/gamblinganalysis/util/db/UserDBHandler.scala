@@ -1,16 +1,17 @@
 package gamblinganalysis.util.db
 
+import gamblinganalysis.AccountOwner
 import scalikejdbc._
 
 object UserDBHandler extends BaseDBHandler {
-  def test() = {
-    println("Starting test")
-
-    val results: List[Map[String, Any]] = sql"""
+  def users: Seq[AccountOwner] = {
+    sql"""
         SELECT * FROM user
-    """.map(_.toMap).list.apply()
-
-    println(results)
+    """.map(_.toMap)
+      .list
+      .apply()
+      .map(r => AccountOwner(r("name").toString))
+      .toSeq
   }
 
 

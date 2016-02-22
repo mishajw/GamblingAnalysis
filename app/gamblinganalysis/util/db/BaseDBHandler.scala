@@ -15,4 +15,6 @@ class BaseDBHandler {
 
   // ad-hoc session provider on the REPL
   implicit val session = AutoSession
+
+  protected val sqlFolder: String = "res/sql"
 }
