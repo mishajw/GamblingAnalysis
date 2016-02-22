@@ -1,55 +1,53 @@
 package gamblinganalysis.analysis
 
+import gamblinganalysis.GameOutcome
 import gamblinganalysis.odds.{Odd, OddsCollection}
-
-import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
+import gamblinganalysis.plans.{ValuedPlan, ValuedOdd}
 
 /**
   * Created by misha on 10/02/16.
   */
 object OddsOptimiser {
 
-  type OddHeap = Seq[Seq[Odd]]
+  private val defaultBetAmount = 100
 
   /**
     * Get the best odds combination
+    *
     * @param odds odds to choose from
     * @return odds collection of best odds
     */
-  def optimise(odds: Seq[OddsCollection]): OddsCollection = {
-    val topOdds = getSortedOdds(odds).map(_.head)
-    new OddsCollection(topOdds)
+  def optimise(odds: OddsCollection): ValuedPlan = {
+    val topOdds = getSortedOdds(odds) map { case (_, o :: os) => o }
+    planFromOdds(topOdds.toSeq)
+  }
+
+  /**
+    * Create an optimum buying plan from odds
+    *
+    * @param odds odds to use
+    * @return the plan (keeps coming up again)
+    */
+  def planFromOdds(odds: Seq[Odd]): ValuedPlan = {
+    val totalProbabilities = odds.map(_.getProbability).sum
+
+    val amounts = odds map { o =>
+      ValuedOdd(o, (o.getProbability / totalProbabilities) * defaultBetAmount)
+    }
+
+    new ValuedPlan(amounts)
   }
 
   /**
     * Get odds sorted by probability
+    *
     * @param odds odds to choose from
     * @return list of list of best odds
     */
-  def getSortedOdds(odds: Seq[OddsCollection]): OddHeap = {
-    val oddGroups = separateOdds(odds)
-    oddGroups.map(_.sortBy(_.getProbability))
-  }
-
-  /**
-    * Separate the odds into the different teams
-    * @param odds odds to separate
-    * @return list of list of odd groups
-    */
-  private def separateOdds(odds: Seq[OddsCollection]): OddHeap = {
-    val oddGroups = new mutable.HashMap[String, ListBuffer[Odd]]()
-
-    odds.foreach(o => {
-      o.odds.foreach(o1 => {
-        if (oddGroups.contains(o1.outcome)) {
-          oddGroups(o1.outcome).+=(o1)
-        } else {
-          oddGroups(o1.outcome) = ListBuffer(o1)
-        }
-      })
-    })
-
-    oddGroups.values.toSeq
+  def getSortedOdds(odds: OddsCollection): Map[GameOutcome, Seq[Odd]] = {
+    val oddGroups = odds.groupedOutcome()
+    oddGroups map { case (outcome, os) =>
+      outcome -> os.sortBy(-_.getProbability)
+    }
   }
 }

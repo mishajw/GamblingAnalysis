@@ -1,8 +1,9 @@
 package gamblinganalysis.analysis
 
 import gamblinganalysis.accounts.{Account, AccountsCollection}
-import gamblinganalysis.factory.{BookieFactory, OwnerFactory}
+import gamblinganalysis.factory.{BookieFactory, UserFactory}
 import gamblinganalysis.odds.OddsCollection
+import gamblinganalysis.plans.FullOdd
 import gamblinganalysis.retriever.GameRetriever
 import gamblinganalysis.retriever.odds.OddsCheckerRetriever
 import gamblinganalysis.util.exceptions.ParseException
@@ -17,10 +18,10 @@ object AggressiveSimulator {
 
   private val log = Logger(getClass)
 
-  private val minumumAmount = BigDecimal(1)
+  private val minimumAmount = BigDecimal(1)
 
   def run(): Unit = {
-    val allOdds = getAllOdds
+    val allOdds: Seq[OddsCollection] = getAllOdds
 
     val acc = 10
     val money = acc * 10
@@ -39,17 +40,17 @@ object AggressiveSimulator {
     }
   }
 
-  private def run(accountsCollection: AccountsCollection, odds: Seq[Seq[OddsCollection]]): Seq[BigDecimal] = {
+  private def run(accountsCollection: AccountsCollection, odds: Seq[OddsCollection]): Seq[BigDecimal] = {
     val allProfits = ListBuffer[BigDecimal]()
 
-    odds.foreach(o => {
-      accountsCollection.mostProfitable(o) match {
+    odds.foreach(oc => {
+      accountsCollection.mostProfitable(oc) match {
         case Some(bestPlan) =>
-          val profit: BigDecimal = bestPlan.profit
-          if (profit > minumumAmount) {
+          val profit: BigDecimal = bestPlan.roi
+          if (profit > minimumAmount) {
             allProfits += profit
 
-            bestPlan.getAmounts.foreach { case (acc, amount) =>
+            bestPlan.oddPairs foreach { case FullOdd(odd, acc, amount) =>
               acc.amount -= amount
             }
           }
@@ -68,7 +69,7 @@ object AggressiveSimulator {
         case e: Exception => None
         case e: ParseException => None
       }
-    }).sortBy(-OddsOptimiser.optimise(_).getInvestmentReturn)
+    }).sortBy(-OddsOptimiser.optimise(_).roi)
   }
 
   private def generateAccounts(amount: Int, money: BigDecimal): AccountsCollection = {
@@ -82,7 +83,7 @@ object AggressiveSimulator {
         .take(amount)
         .map(b => {
           new Account(
-            OwnerFactory get Random.shuffle(users).head,
+            UserFactory get Random.shuffle(users).head,
             money / amount,
             BookieFactory get b)
         })

@@ -1,11 +1,13 @@
 package gamblinganalysis
 
-import gamblinganalysis.accounts.{Account, BuyingPlan}
+import gamblinganalysis.accounts.Account
 import gamblinganalysis.analysis.{AggressiveSimulator, OddsOptimiser}
-import gamblinganalysis.factory.{BookieFactory, GameFactory, GameOutcomeFactory, OwnerFactory}
+import gamblinganalysis.factory.{BookieFactory, GameFactory, GameOutcomeFactory, UserFactory}
 import gamblinganalysis.odds.Odd
+import gamblinganalysis.plans.FullPlan
 import gamblinganalysis.retriever.GameRetriever
 import gamblinganalysis.retriever.odds.{OddsCheckerRetriever, SkybetRetriever}
+import gamblinganalysis.util.db.{GeneralDBHandler, UserDBHandler}
 import gamblinganalysis.util.exceptions.ParseException
 import play.api.Logger
 
@@ -16,7 +18,8 @@ object Main {
   private val log = Logger(getClass)
 
   def main(args: Array[String]) {
-    runAggressiveSimulator()
+    GeneralDBHandler.reset()
+    println(UserDBHandler.users.mkString("\n"))
   }
 
   def runOddsChecker() = {
@@ -25,7 +28,7 @@ object Main {
     val odds = OddsCheckerRetriever.getOdds("http://www.oddschecker.com/tennis/atp-marseille/peter-gojowczyk-v-kenny-de-schepper/winner")
     val optimum = OddsOptimiser.optimise(odds)
 
-    optimum.printSafeBet()
+    optimum
   }
 
   def runGameRetriever() = {
@@ -35,7 +38,7 @@ object Main {
       try {
         val odds = OddsCheckerRetriever.getOdds(g)
         val optimum = OddsOptimiser.optimise(odds)
-        Some(optimum, optimum.getInvestmentReturn)
+        Some(optimum, optimum.roi)
       } catch {
         case e: Exception => None
         case e: ParseException => None
@@ -44,8 +47,7 @@ object Main {
       .sortBy { case (odds, ir) => -ir }
       .map { case (odds, ir) => odds }
       .foreach(o => {
-        o.printSafeBet()
-        println()
+        println(s"$o\n")
       })
   }
 
@@ -62,22 +64,20 @@ object Main {
     val game = GameFactory get Set("Win", "Draw", "Lose")
     val bet365: Bookie = BookieFactory get "bet365"
 
-    val plan = new BuyingPlan(Seq(
-      (
-        new Account(OwnerFactory get "Misha", BigDecimal(7), bet365),
-        new Odd(3, 1, GameOutcomeFactory get ("Win", game), bet365)
+    val plan = new FullPlan(Seq(
+      LinkedOdd(
+        new Odd(3, 1, GameOutcomeFactory get ("Win", game), bet365),
+        new Account(UserFactory get "Misha", BigDecimal(7), bet365)
       ),
-      (
-        new Account(OwnerFactory get "Hannah", BigDecimal(10), bet365),
-        new Odd(2, 1, GameOutcomeFactory get ("Draw", game), bet365)
+      LinkedOdd(
+        new Odd(2, 1, GameOutcomeFactory get ("Draw", game), bet365),
+        new Account(UserFactory get "Hannah", BigDecimal(10), bet365)
       ),
-      (
-        new Account(OwnerFactory get "Jodie", BigDecimal(10), bet365),
-        new Odd(2, 1, GameOutcomeFactory get ("Lose", game), bet365)
+      LinkedOdd(
+        new Odd(2, 1, GameOutcomeFactory get ("Lose", game), bet365),
+        new Account(UserFactory get "Jodie", BigDecimal(10), bet365)
       )
     ))
-
-    log.info(s"Profit: ${plan.profit}, Limiting account: ${plan.getLimitingAccount}")
   }
 
   def runAggressiveSimulator() = {
