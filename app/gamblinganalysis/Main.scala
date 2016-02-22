@@ -1,12 +1,11 @@
 package gamblinganalysis
 
 import gamblinganalysis.accounts.Account
-import gamblinganalysis.analysis.{BuyingPlan, AggressiveSimulator, OddsOptimiser}
+import gamblinganalysis.analysis.{AggressiveSimulator, BuyingPlan, OddsOptimiser}
 import gamblinganalysis.factory.{BookieFactory, GameFactory, GameOutcomeFactory, UserFactory}
 import gamblinganalysis.odds.Odd
 import gamblinganalysis.retriever.GameRetriever
 import gamblinganalysis.retriever.odds.{OddsCheckerRetriever, SkybetRetriever}
-import gamblinganalysis.util.db.{GeneralDBHandler, UserDBHandler}
 import gamblinganalysis.util.exceptions.ParseException
 import play.api.Logger
 
@@ -76,6 +75,7 @@ object Main {
       (
         new Odd(2, 1, GameOutcomeFactory get ("Lose", game), bet365),
         new Account(UserFactory get "Jodie", BigDecimal(10), bet365)
+
       )
     ))
   }
