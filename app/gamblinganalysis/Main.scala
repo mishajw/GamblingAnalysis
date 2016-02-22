@@ -2,10 +2,11 @@ package gamblinganalysis
 
 import gamblinganalysis.accounts.{Account, BuyingPlan}
 import gamblinganalysis.analysis.{AggressiveSimulator, OddsOptimiser}
-import gamblinganalysis.factory.{BookieFactory, GameFactory, GameOutcomeFactory, OwnerFactory}
+import gamblinganalysis.factory.{BookieFactory, GameFactory, GameOutcomeFactory, UserFactory}
 import gamblinganalysis.odds.Odd
 import gamblinganalysis.retriever.GameRetriever
 import gamblinganalysis.retriever.odds.{OddsCheckerRetriever, SkybetRetriever}
+import gamblinganalysis.util.db.{GeneralDBHandler, UserDBHandler}
 import gamblinganalysis.util.exceptions.ParseException
 import play.api.Logger
 
@@ -16,7 +17,8 @@ object Main {
   private val log = Logger(getClass)
 
   def main(args: Array[String]) {
-    runAggressiveSimulator()
+    GeneralDBHandler.reset()
+    println(UserDBHandler.users.mkString("\n"))
   }
 
   def runOddsChecker() = {
@@ -64,15 +66,15 @@ object Main {
 
     val plan = new BuyingPlan(Seq(
       (
-        new Account(OwnerFactory get "Misha", BigDecimal(7), bet365),
+        new Account(UserFactory get "Misha", BigDecimal(7), bet365),
         new Odd(3, 1, GameOutcomeFactory get ("Win", game), bet365)
       ),
       (
-        new Account(OwnerFactory get "Hannah", BigDecimal(10), bet365),
+        new Account(UserFactory get "Hannah", BigDecimal(10), bet365),
         new Odd(2, 1, GameOutcomeFactory get ("Draw", game), bet365)
       ),
       (
-        new Account(OwnerFactory get "Jodie", BigDecimal(10), bet365),
+        new Account(UserFactory get "Jodie", BigDecimal(10), bet365),
         new Odd(2, 1, GameOutcomeFactory get ("Lose", game), bet365)
       )
     ))

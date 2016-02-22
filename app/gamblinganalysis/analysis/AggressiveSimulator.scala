@@ -1,7 +1,7 @@
 package gamblinganalysis.analysis
 
 import gamblinganalysis.accounts.{Account, AccountsCollection}
-import gamblinganalysis.factory.{BookieFactory, OwnerFactory}
+import gamblinganalysis.factory.{BookieFactory, UserFactory}
 import gamblinganalysis.odds.OddsCollection
 import gamblinganalysis.retriever.GameRetriever
 import gamblinganalysis.retriever.odds.OddsCheckerRetriever
@@ -82,7 +82,7 @@ object AggressiveSimulator {
         .take(amount)
         .map(b => {
           new Account(
-            OwnerFactory get Random.shuffle(users).head,
+            UserFactory get Random.shuffle(users).head,
             money / amount,
             BookieFactory get b)
         })

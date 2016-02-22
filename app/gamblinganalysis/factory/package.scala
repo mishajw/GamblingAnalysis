@@ -13,8 +13,8 @@ package object factory {
     def newType(identifier: Set[String]) = Game(identifier)
   }
 
-  object OwnerFactory extends BasicFactory[AccountOwner, String]{
-    def newType(name: String) = AccountOwner(name)
+  object UserFactory extends BasicFactory[User, String]{
+    def newType(name: String) = User(name)
   }
 
   object BookieFactory extends BasicFactory[Bookie, String] {
