@@ -1,18 +1,16 @@
 CREATE TABLE user (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  name        VARCHAR
+  name        TEXT
 );
 
 CREATE TABLE bookie (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  name        VARCHAR
+  name        TEXT
 );
 
 CREATE TABLE account (
-  user_id     INTEGER,
-  bookie_id   INTEGER,
-  FOREIGN KEY (user_id) REFERENCES user(id),
-  FOREIGN KEY (bookie_id) REFERENCES bookie(id),
+  user_id     INTEGER REFERENCES user(id),
+  bookie_id   INTEGER REFERENCES bookie(id),
   PRIMARY KEY (user_id, bookie_id)
 );
 
@@ -27,9 +25,9 @@ CREATE TABLE arbitration (
 );
 
 CREATE TABLE arbitration_transactions (
-  transaction_id                INTEGER,
-  arbitration_id                INTEGER,
-  FOREIGN KEY (transaction_id)  REFERENCES account_transaction(id),
-  FOREIGN KEY (arbitration_id)  REFERENCES arbitration(id),
+  outcome         TEXT,
+  bookie_id       INTEGER REFERENCES bookie(id),
+  transaction_id  INTEGER REFERENCES account_transaction(id),
+  arbitration_id  INTEGER REFERENCES arbitration(id),
   PRIMARY KEY (transaction_id, arbitration_id)
 );
