@@ -21,3 +21,15 @@ CREATE TABLE account_transaction (
   account_id  INTEGER REFERENCES account,
   amount      INTEGER
 );
+
+CREATE TABLE arbitration (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT
+);
+
+CREATE TABLE arbitration_transactions (
+  transaction_id                INTEGER,
+  arbitration_id                INTEGER,
+  FOREIGN KEY (transaction_id)  REFERENCES account_transaction(id),
+  FOREIGN KEY (arbitration_id)  REFERENCES arbitration(id),
+  PRIMARY KEY (transaction_id, arbitration_id)
+);
