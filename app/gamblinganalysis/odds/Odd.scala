@@ -1,6 +1,6 @@
 package gamblinganalysis.odds
 
-import gamblinganalysis.{GameOutcome, Bookie}
+import gamblinganalysis.{Bookie, GameOutcome}
 
 /**
   * Created by misha on 09/02/16.

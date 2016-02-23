@@ -1,9 +1,8 @@
 package gamblinganalysis.retriever.odds
 
-import gamblinganalysis.analysis.OddsOptimiser
-import gamblinganalysis.factory.{GameFactory, GameOutcomeFactory, BookieFactory}
-import gamblinganalysis.odds.{OddsCollection, Odd}
-import gamblinganalysis.retriever.{GameRetriever, Retriever}
+import gamblinganalysis.factory.{BookieFactory, GameFactory, GameOutcomeFactory}
+import gamblinganalysis.odds.{Odd, OddsCollection}
+import gamblinganalysis.retriever.Retriever
 import gamblinganalysis.util.exceptions.ParseException
 import org.jsoup.nodes.Element
 import play.api.Logger

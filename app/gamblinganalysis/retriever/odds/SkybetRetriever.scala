@@ -1,6 +1,6 @@
 package gamblinganalysis.retriever.odds
 
-import gamblinganalysis.factory.{GameOutcomeFactory, GameFactory, BookieFactory}
+import gamblinganalysis.factory.{BookieFactory, GameFactory, GameOutcomeFactory}
 import gamblinganalysis.odds.{Odd, OddsCollection}
 import gamblinganalysis.retriever.Retriever
 import org.jsoup.nodes.Element

@@ -1,6 +1,6 @@
 package gamblinganalysis.util.db
 
-import scalikejdbc.{AutoSession, LoggingSQLAndTimeSettings, GlobalSettings, ConnectionPool}
+import scalikejdbc.{AutoSession, ConnectionPool, GlobalSettings, LoggingSQLAndTimeSettings}
 
 /**
   * Created by misha on 21/02/16.

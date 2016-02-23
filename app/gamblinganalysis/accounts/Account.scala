@@ -1,6 +1,6 @@
 package gamblinganalysis.accounts
 
-import gamblinganalysis.{User, Bookie}
+import gamblinganalysis.{Bookie, User}
 
 /**
   * Created by misha on 16/02/16.
