@@ -4,3 +4,6 @@ DROP TABLE IF EXISTS account;
 DROP TABLE IF EXISTS account_transaction;
 DROP TABLE IF EXISTS arbitration;
 DROP TABLE IF EXISTS arbitration_transactions;
+DROP TABLE IF EXISTS game;
+DROP TABLE IF EXISTS game_outcome;
+DROP TABLE IF EXISTS odd;
