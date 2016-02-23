@@ -1,6 +1,7 @@
 package gamblinganalysis.retriever.odds
 
-import gamblinganalysis.factory.{BookieFactory, GameFactory, GameOutcomeFactory}
+import gamblinganalysis.Sport
+import gamblinganalysis.factory.{BookieFactory, GameFactory, GameOutcomeFactory, SportFactory}
 import gamblinganalysis.odds.{Odd, OddsCollection}
 import gamblinganalysis.retriever.Retriever
 import gamblinganalysis.util.exceptions.ParseException
@@ -23,21 +24,30 @@ object OddsCheckerRetriever extends Retriever {
   private val selOddRow = "tr[class=\"diff-row eventTableRow bc\"]"
   private val selOddCell = "td:not(.sel, .wo)"
 
-  def getOdds(url: String): OddsCollection = {
+  private val regexSport = ".*oddschecker.com/([A-Za-z]+)/.*".r
+
+  def retrieve(url: String): OddsCollection = {
     val doc = getHtml(url)
 
+    val sportString = url match {
+      case regexSport(s) => s
+      case _ => ""
+    }
+
+    val sport = SportFactory get sportString
+
     makeArray(doc.select(selTable)).toList match {
-      case table :: xs => getOddsFromTable(table)
+      case table :: xs => getOddsFromTable(table, sport)
       case _ => throw new ParseException("Couldn't find table")
     }
   }
 
-  def getOddsFromTable(table: Element): OddsCollection = {
+  def getOddsFromTable(table: Element, sport: Sport): OddsCollection = {
     val sources = getSourcesFromTable(table)
 
     val rows = makeArray(table.select(selOddRow))
 
-    val game = GameFactory get rows.map(r => r.attr(attrOutcome)).toSet
+    val game = GameFactory get (rows.map(r => r.attr(attrOutcome)).toSet, sport)
 
     new OddsCollection(
       rows.map(oddRow => {

@@ -65,7 +65,7 @@ class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) ex
     }
   }
 
-  private def parsePercentage(bd: BigDecimal) = s"${bd.setScale(2, RoundingMode.DOWN)}%"
+  private def parsePercentage(bd: BigDecimal) = s"${bd.setScale(2, RoundingMode.DOWN) * 100}%"
 
   private def parseMoney(bd: BigDecimal) = s"£${bd.setScale(2, RoundingMode.DOWN)}"
 

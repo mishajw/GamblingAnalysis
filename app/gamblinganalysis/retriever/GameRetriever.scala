@@ -31,7 +31,7 @@ object GameRetriever extends Retriever {
   def getAllOdds: Seq[OddsCollection] = {
     GameRetriever.retrieve.flatMap(g => {
       try {
-        Some(OddsCheckerRetriever.getOdds(g))
+        Some(OddsCheckerRetriever.retrieve(g))
       } catch {
         case e: Exception => None
         case e: ParseException => None

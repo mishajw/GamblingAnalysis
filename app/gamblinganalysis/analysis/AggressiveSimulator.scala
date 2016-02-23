@@ -9,7 +9,6 @@ import gamblinganalysis.util.exceptions.ParseException
 import gamblinganalysis.{bookies, users}
 import play.api.Logger
 
-import scala.collection.mutable.ListBuffer
 import scala.math.BigDecimal
 import scala.util.Random
 
@@ -62,7 +61,7 @@ object AggressiveSimulator {
   private def getAllOdds = {
     GameRetriever.retrieve.flatMap(g => {
       try {
-        Some(OddsCheckerRetriever.getOdds(g))
+        Some(OddsCheckerRetriever.retrieve(g))
       } catch {
         case e: Exception => None
         case e: ParseException => None

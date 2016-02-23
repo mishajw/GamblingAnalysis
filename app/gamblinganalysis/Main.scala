@@ -2,7 +2,7 @@ package gamblinganalysis
 
 import gamblinganalysis.accounts.Account
 import gamblinganalysis.analysis.{AggressiveSimulator, BuyingPlan, OddsOptimiser}
-import gamblinganalysis.factory.{BookieFactory, GameFactory, GameOutcomeFactory, UserFactory}
+import gamblinganalysis.factory._
 import gamblinganalysis.odds.Odd
 import gamblinganalysis.retriever.GameRetriever
 import gamblinganalysis.retriever.odds.{OddsCheckerRetriever, SkybetRetriever}
@@ -15,18 +15,14 @@ import play.api.Logger
 object Main {
   private val log = Logger(getClass)
 
-  def main(args: Array[String]) {
-//    GeneralDBHandler.reset()
-//    println(UserDBHandler.users.mkString("\n"))
-    val plans: Seq[BuyingPlan] = runAggressiveSimulator()
-
-    println(plans.mkString("\n"))
+  def main(args: Array[String]): Unit = {
+    runGameRetriever()
   }
 
   def runOddsChecker() = {
     log.info("Starting OddsChecker")
 
-    val odds = OddsCheckerRetriever.getOdds("http://www.oddschecker.com/tennis/atp-marseille/peter-gojowczyk-v-kenny-de-schepper/winner")
+    val odds = OddsCheckerRetriever.retrieve("http://www.oddschecker.com/tennis/atp-marseille/peter-gojowczyk-v-kenny-de-schepper/winner")
     val optimum = OddsOptimiser.optimise(odds)
 
     optimum
@@ -37,7 +33,7 @@ object Main {
 
     GameRetriever.retrieve.flatMap(g => {
       try {
-        val odds = OddsCheckerRetriever.getOdds(g)
+        val odds = OddsCheckerRetriever.retrieve(g)
         val optimum = OddsOptimiser.optimise(odds)
         Some(optimum, optimum.roi)
       } catch {
@@ -54,14 +50,14 @@ object Main {
   def runSkybet() = {
     log.info("Starting Skybet")
 
-    val results = SkybetRetriever.run()
-    results.foreach(r => log.info(r.toString))
+    val results = SkybetRetriever.retrieve()
+    log.info(results.toString)
   }
 
   def runBuyingPlan() = {
     log.info("Starting buying plan")
 
-    val game = GameFactory get Set("Win", "Draw", "Lose")
+    val game = GameFactory get (Set("Win", "Draw", "Lose"), SportFactory get "test_sport")
     val bet365: Bookie = BookieFactory get "bet365"
 
     val plan = new BuyingPlan(Seq(
@@ -76,7 +72,6 @@ object Main {
       (
         new Odd(2, 1, GameOutcomeFactory get ("Lose", game), bet365),
         new Account(UserFactory get "Jodie", BigDecimal(10), bet365)
-
       )
     ))
   }

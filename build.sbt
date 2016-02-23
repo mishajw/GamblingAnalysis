@@ -14,7 +14,8 @@ libraryDependencies ++= Seq(
   "com.h2database"  %  "h2"                % "1.4.191",
   "ch.qos.logback"  %  "logback-classic"   % "1.1.3",
   "org.json4s"      %% "json4s-native"     % "3.3.0",
-  "org.json4s"      %% "json4s-jackson"    % "3.3.0"
+  "org.json4s"      %% "json4s-jackson"    % "3.3.0",
+  "com.typesafe.akka" % "akka-actor_2.11"  % "2.4.2"
 )
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )  

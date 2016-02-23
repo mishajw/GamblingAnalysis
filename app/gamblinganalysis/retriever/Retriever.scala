@@ -2,6 +2,7 @@ package gamblinganalysis.retriever
 
 import java.net.SocketTimeoutException
 
+import gamblinganalysis.odds.OddsCollection
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements

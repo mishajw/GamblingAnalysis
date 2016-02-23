@@ -4,8 +4,9 @@ import gamblinganalysis.odds.Odd
 package object gamblinganalysis {
   case class Bookie(name: String)
   case class User(name: String)
-  case class Game(outcomes: Set[String])
+  case class Game(outcomes: Set[String], sport: Sport)
   case class GameOutcome(outcome: String, game: Game)
+  case class Sport(title: String)
 
   val bookies = Seq(
     "Totesport", "Winner", "Stan James", "Paddy Power", "BetBright", "Matchbook",

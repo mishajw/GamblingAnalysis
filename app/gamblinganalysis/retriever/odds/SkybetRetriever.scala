@@ -1,20 +1,19 @@
 package gamblinganalysis.retriever.odds
 
-import gamblinganalysis.factory.{BookieFactory, GameFactory, GameOutcomeFactory}
+import gamblinganalysis.{Sport, Game}
+import gamblinganalysis.factory.{SportFactory, BookieFactory, GameFactory, GameOutcomeFactory}
 import gamblinganalysis.odds.{Odd, OddsCollection}
-import gamblinganalysis.retriever.Retriever
 import org.jsoup.nodes.Element
 import play.api.Logger
 
 /**
   * Created by misha on 15/02/16.
   */
-object SkybetRetriever extends Retriever {
-  private val log = Logger(getClass())
+object SkybetRetriever extends OddsRetriever {
+  private val log = Logger(getClass)
 
   private val source = BookieFactory get "Skybet"
   private val baseUrl = "http://www.skybet.com/"
-
   private val sports = Seq("tennis")
 
   private val regexTeams = "(.*) vs? (.*)".r
@@ -24,7 +23,8 @@ object SkybetRetriever extends Retriever {
   private val selRow = ".live-rowgroup"
   private val selOdds = ".odds"
 
-  def run(url: String = baseUrl + sports.head): Seq[OddsCollection] = {
+  override def retrieve(): OddsCollection = {
+    val url = baseUrl + sports.head
     val html = getHtml(url)
 
     val tables = getTables(html)
@@ -35,9 +35,11 @@ object SkybetRetriever extends Retriever {
         })
     })
 
-    rows.flatMap { case (t, r) =>
+    val odds = rows.flatMap({ case (t, r) =>
       getOddsFromRow(r, t)
-    }
+    }).flatMap(_.odds)
+
+    new OddsCollection(odds)
   }
 
   def getTables(html: Element) = {
@@ -48,7 +50,9 @@ object SkybetRetriever extends Retriever {
     makeArray(table.select(selRow))
   }
 
-  def getOddsFromRow(row: Element, sport: String): Option[OddsCollection] = {
+  def getOddsFromRow(row: Element, sportString: String): Option[OddsCollection] = {
+    val sport = SportFactory get sportString
+
     // Parse teams
     row.attr("data-event-title") match {
       case regexTeams(t1, t2) =>
@@ -56,18 +60,18 @@ object SkybetRetriever extends Retriever {
         makeArray(row.select(selOdds)).map(_.text()) match {
           // Win/Draw/Lose
           case Seq(regexOdds(w1n, w1d), regexOdds(dn, dd), regexOdds(w2n, w2d)) =>
-            val game = GameFactory get Set(t1, "Draw", t2)
+            val game = GameFactory get (Set(t1, "Draw", t2), sport)
             Some(new OddsCollection(Seq(
-              new Odd(w1n.toInt, w1d.toInt, GameOutcomeFactory get (t1, game), source, sport),
-              new Odd(dn.toInt, dd.toInt, GameOutcomeFactory get ("Draw", game), source, sport),
-              new Odd(w2n.toInt, w2d.toInt, GameOutcomeFactory get (t2, game), source, sport)
+              new Odd(w1n.toInt, w1d.toInt, GameOutcomeFactory get (t1, game), source),
+              new Odd(dn.toInt, dd.toInt, GameOutcomeFactory get ("Draw", game), source),
+              new Odd(w2n.toInt, w2d.toInt, GameOutcomeFactory get (t2, game), source)
             )))
           // Win/Lose
           case Seq(regexOdds(w1n, w1d), regexOdds(w2n, w2d)) =>
-            val game = GameFactory get Set(t1, t2)
+            val game = GameFactory get (Set(t1, t2), sport)
             Some(new OddsCollection(Seq(
-              new Odd(w1n.toInt, w1d.toInt, GameOutcomeFactory get (t1, game), source, sport),
-              new Odd(w2n.toInt, w2d.toInt, GameOutcomeFactory get (t2, game), source, sport)
+              new Odd(w1n.toInt, w1d.toInt, GameOutcomeFactory get (t1, game), source),
+              new Odd(w2n.toInt, w2d.toInt, GameOutcomeFactory get (t2, game), source)
             )))
           case x =>
             println(s"Couldn't parse $x with teams $t1 and $t2")
