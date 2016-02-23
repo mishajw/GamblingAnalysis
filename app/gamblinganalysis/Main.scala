@@ -18,7 +18,9 @@ object Main {
   def main(args: Array[String]) {
 //    GeneralDBHandler.reset()
 //    println(UserDBHandler.users.mkString("\n"))
-    runAggressiveSimulator()
+    val plans: Seq[BuyingPlan] = runAggressiveSimulator()
+
+    println(plans.mkString("\n"))
   }
 
   def runOddsChecker() = {

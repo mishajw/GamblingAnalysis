@@ -49,6 +49,8 @@ class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) ex
     possibleOutcomes.min / totalCost
   }
 
+  lazy val profit = possibleOutcomes.min
+
   override def toString: String = {
     s"Outcomes:   ${odds.map(_.outcome).mkString(", ")}" +
     s"\nBookies:    ${odds.map(_.bookie).mkString(", ")}" +

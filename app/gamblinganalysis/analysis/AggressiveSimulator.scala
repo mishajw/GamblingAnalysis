@@ -19,7 +19,7 @@ object AggressiveSimulator {
 
   private val minimumAmount = BigDecimal(1)
 
-  def run(): Unit = {
+  def run(): Seq[BuyingPlan] = {
     val allOdds: Seq[OddsCollection] = getAllOdds
 
     val acc = 10
@@ -27,37 +27,36 @@ object AggressiveSimulator {
 
     if (money / 10 >= acc) {
       val accountsCollection = generateAccounts(acc, money)
-      val allProfits = run(accountsCollection, allOdds)
+      val allPlans = run(accountsCollection, allOdds)
+      val profits = allPlans.map(_.profit)
 
       log.info(s"Accounts: $acc")
       log.info(s"Money: $money")
-      log.info(s"Profits: ${allProfits.mkString(", ")}")
-      log.info(s"Total of ${allProfits.sum} across ${allProfits.size} arbs")
-      log.info(s"Return of ${(allProfits.sum / money) * 100}%")
+      log.info(s"Profits: ${profits.mkString(", ")}")
+      log.info(s"Total of ${profits.sum} across ${allPlans.size} arbs")
+      log.info(s"Return of ${(profits.sum / money) * 100}%")
 
-      println
-    }
+      allPlans
+    } else Seq()
   }
 
-  private def run(accountsCollection: AccountsCollection, odds: Seq[OddsCollection]): Seq[BigDecimal] = {
-    val allProfits = ListBuffer[BigDecimal]()
-
-    odds.foreach(oc => {
+  private def run(accountsCollection: AccountsCollection, odds: Seq[OddsCollection]): Seq[BuyingPlan] = {
+    odds.flatMap(oc => {
       accountsCollection.mostProfitable(oc) match {
         case Some(bestPlan) =>
           val profit: BigDecimal = bestPlan.roi
           if (profit > minimumAmount) {
-            allProfits += profit
-
             bestPlan.pairs foreach { pair =>
               pair.account.get.amount -= pair.money.get
             }
+
+            Some(bestPlan)
+          } else {
+            None
           }
-        case None =>
+        case None => None
       }
     })
-
-    allProfits.toSeq
   }
 
   private def getAllOdds = {
