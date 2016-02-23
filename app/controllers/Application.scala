@@ -17,35 +17,13 @@ object Application extends Controller {
   }
 
   def bestOdds = Action {
-    val bestOdds = GameRetriever.retrieve.flatMap(g => {
-      try {
-        val odds = OddsCheckerRetriever.getOdds(g)
-        Some(OddsOptimiser.optimise(odds))
-      } catch {
-        case e: Exception => None
-        case e: ParseException => None
-      }
-    })
+    val bestOdds = GameRetriever.getOptimisedOdds
 
     val json = JObject(List(
       "oddsCollection" ->
-        JArray(bestOdds.toList.map(parseBuyingPlan))
+        JArray(bestOdds.toList.map(_.toJson))
     ))
 
     Ok(JsonMethods.pretty(JsonMethods.render(json)))
-  }
-
-  private def parseBuyingPlan(plan: BuyingPlan) = {
-    JObject(List(
-      "odds" -> JArray(plan.odds.toList.map(o => {
-        JObject(List(
-          "numerator" -> JInt(o.gains),
-          "denominator" -> JInt(o.base),
-          "bookie" -> JString(o.bookie.name),
-          "outcome" -> JString(o.outcome)
-        ))
-      })),
-      "roi" -> JDecimal(plan.roi)
-    ))
   }
 }

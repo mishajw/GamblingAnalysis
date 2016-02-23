@@ -1,5 +1,9 @@
 package gamblinganalysis.retriever
 
+import gamblinganalysis.analysis.{BuyingPlan, OddsOptimiser}
+import gamblinganalysis.odds.OddsCollection
+import gamblinganalysis.retriever.odds.OddsCheckerRetriever
+import gamblinganalysis.util.exceptions.ParseException
 import org.jsoup.nodes.Element
 import play.api.Logger
 
@@ -22,6 +26,21 @@ object GameRetriever extends Retriever {
       .map(getRows)
       .map(filterForInPlay)
       .flatMap(getLinksFromRows)
+  }
+
+  def getAllOdds: Seq[OddsCollection] = {
+    GameRetriever.retrieve.flatMap(g => {
+      try {
+        Some(OddsCheckerRetriever.getOdds(g))
+      } catch {
+        case e: Exception => None
+        case e: ParseException => None
+      }
+    })
+  }
+
+  def getOptimisedOdds: Seq[BuyingPlan] = {
+    getAllOdds map OddsOptimiser.optimise
   }
 
   private def getRows(doc: Element): Seq[Element] = {

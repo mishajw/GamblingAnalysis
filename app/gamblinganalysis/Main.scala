@@ -18,7 +18,7 @@ object Main {
   def main(args: Array[String]) {
 //    GeneralDBHandler.reset()
 //    println(UserDBHandler.users.mkString("\n"))
-    runGameRetriever()
+    runAggressiveSimulator()
   }
 
   def runOddsChecker() = {
@@ -36,7 +36,6 @@ object Main {
     GameRetriever.retrieve.flatMap(g => {
       try {
         val odds = OddsCheckerRetriever.getOdds(g)
-        println(odds.odds.mkString("\n"))
         val optimum = OddsOptimiser.optimise(odds)
         Some(optimum, optimum.roi)
       } catch {

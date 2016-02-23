@@ -1,12 +1,14 @@
 package gamblinganalysis.analysis
 
+import gamblinganalysis.util.JsonConvertable
 import gamblinganalysis.{OddAccount, OddMoney}
 import gamblinganalysis.accounts.Account
 import gamblinganalysis.odds.Odd
+import org.json4s._
 
 import scala.math.BigDecimal.RoundingMode
 
-class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) {
+class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) extends JsonConvertable {
 
   case class OddPair(odd: Odd, money: Option[BigDecimal], account: Option[Account])
 
@@ -66,4 +68,18 @@ class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) {
   private def parseMoney(bd: BigDecimal) = s"£${bd.setScale(2, RoundingMode.DOWN)}"
 
   private def parseMoneyList(bds: Seq[BigDecimal]) = bds.map(parseMoney).mkString(", ")
+
+  override def toJson = {
+    JObject(List(
+      "odds" -> JArray(odds.toList.map(o => {
+        JObject(List(
+          "numerator" -> JInt(o.gains),
+          "denominator" -> JInt(o.base),
+          "bookie" -> JString(o.bookie.name),
+          "outcome" -> JString(o.outcome)
+        ))
+      })),
+      "roi" -> JDecimal(roi)
+    ))
+  }
 }
