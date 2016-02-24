@@ -34,20 +34,37 @@ object GameDetailsDBHandler extends BaseDBHandler {
   def insertGame(game: Game): Int = {
     val sportId = insertSport(game.sport)
 
-    val gameId =
-      sql"""
+    val idOpt = sql"""
+         SELECT G.id
+         FROM game G
+         WHERE (
+            SELECT COUNT(1)
+            FROM game_outcome O
+            WHERE O.outcome IN (${game.outcomes})
+            AND O.game_id = G.id
+         ) = ${game.outcomes.size}
+       """.map(_.int("id")).single.apply()
+
+    log.debug("ID opt for inserting game: " + idOpt)
+
+    idOpt match {
+      case Some(id) => id
+      case None =>
+        val gameId =
+          sql"""
            INSERT INTO game(sport_id) VALUES ($sportId)
          """.updateAndReturnGeneratedKey().apply().toInt
 
-    log.info(s"Inserted game with ID: $gameId")
+        log.info(s"Inserted game with ID: $gameId")
 
-    game.outcomes.foreach { o =>
-      sql"""
+        game.outcomes.foreach { o =>
+          sql"""
            INSERT INTO game_outcome(game_id, outcome) VALUES ($gameId, $o)
          """.update.apply()
-    }
+        }
 
-    gameId
+        gameId
+    }
   }
 
   def insertSport(sport: Sport): Int = {
