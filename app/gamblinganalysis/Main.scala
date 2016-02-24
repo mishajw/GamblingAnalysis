@@ -6,6 +6,7 @@ import gamblinganalysis.factory._
 import gamblinganalysis.odds.Odd
 import gamblinganalysis.retriever.GameRetriever
 import gamblinganalysis.retriever.odds.{actors, OddsCheckerRetriever, SkybetRetriever}
+import gamblinganalysis.util.db.{GeneralDBHandler, GameDetailsDBHandler}
 import gamblinganalysis.util.exceptions.ParseException
 import play.api.Logger
 
@@ -16,7 +17,8 @@ object Main {
   private val log = Logger(getClass)
 
   def main(args: Array[String]): Unit = {
-    actors.start()
+    GeneralDBHandler.reset()
+    GameDetailsDBHandler.insertGame(Game(Set("Win", "Draw", "Lose"), Sport("Football")))
   }
 
   def runOddsChecker() = {

@@ -32,8 +32,14 @@ CREATE TABLE arbitration_transactions (
   PRIMARY KEY (transaction_id, arbitration_id)
 );
 
+CREATE TABLE sport (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  title           TEXT
+);
+
 CREATE TABLE game (
-  id              INTEGER PRIMARY KEY AUTOINCREMENT
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  sport_id        INTEGER REFERENCES sport(id)
 );
 
 CREATE TABLE game_outcome (
