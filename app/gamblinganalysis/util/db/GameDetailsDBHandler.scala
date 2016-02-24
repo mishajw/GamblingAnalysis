@@ -28,22 +28,14 @@ object GameDetailsDBHandler extends BaseDBHandler {
             $bookieId,
             $gameId,
             $outcomeId)
+
        """.updateAndReturnGeneratedKey().apply().toInt
   }
 
   def insertGame(game: Game): Int = {
     val sportId = insertSport(game.sport)
 
-    val idOpt = sql"""
-         SELECT G.id
-         FROM game G
-         WHERE (
-            SELECT COUNT(1)
-            FROM game_outcome O
-            WHERE O.outcome IN (${game.outcomes})
-            AND O.game_id = G.id
-         ) = ${game.outcomes.size}
-       """.map(_.int("id")).single.apply()
+    val idOpt = getGameId(game)
 
     log.debug("ID opt for inserting game: " + idOpt)
 
@@ -95,5 +87,40 @@ object GameDetailsDBHandler extends BaseDBHandler {
              INSERT INTO bookie(name) VALUES (${bookie.name})
            """.updateAndReturnGeneratedKey().apply().toInt
     }
+  }
+
+  def allGames: Seq[Game] = {
+    sql"""
+         SELECT GROUP_CONCAT(O.outcome) AS outcomes, S.title AS sport
+         FROM game G, game_outcome O, sport S
+         WHERE G.id = O.game_id
+         AND G.sport_id = S.id
+         GROUP BY O.game_id
+       """.map(r => Game(r.string("outcomes").split(",").toSet, Sport(r.string("sport"))))
+            .list.apply()
+  }
+
+  def oddsForGame(game: Game): Seq[Odd] = {
+    sql"""
+         SELECT O.numerator, O.denominator, O.time, B.name AS bookie, OC.outcome AS outcome
+         FROM odd O, bookie B, game_outcome OC
+         WHERE O.game_id = ${getGameId(game).get}
+         AND O.bookie_id = B.id
+         AND O.outcome_id = OC.id
+       """.map(r => new Odd(r.int("numerator"), r.int("denominator"), r.string("outcome"), game, Bookie(r.string("bookie"))))
+            .list.apply()
+  }
+
+  def getGameId(game: Game): Option[Int] = {
+    sql"""
+         SELECT G.id
+         FROM game G
+         WHERE (
+            SELECT COUNT(1)
+            FROM game_outcome O
+            WHERE O.outcome IN (${game.outcomes})
+            AND O.game_id = G.id
+         ) = ${game.outcomes.size}
+       """.map(_.int("id")).single.apply()
   }
 }
