@@ -74,11 +74,11 @@ object SkybetRetriever extends OddsRetriever {
               new Odd(w2n.toInt, w2d.toInt, GameOutcomeFactory get (t2, game), source)
             )))
           case x =>
-            info.warn(s"Couldn't parse $x with teams $t1 and $t2")
+            log.warn(s"Couldn't parse $x with teams $t1 and $t2")
             None
         }
       case x =>
-        info.warn(s"Couldn't parse $x")
+        log.warn(s"Couldn't parse $x")
         None
     }
   }
