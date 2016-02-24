@@ -1,5 +1,7 @@
 package gamblinganalysis.util.db
 
+import scalikejdbc._
+import gamblinganalysis.Bookie
 import scalikejdbc.{AutoSession, ConnectionPool, GlobalSettings, LoggingSQLAndTimeSettings}
 
 /**

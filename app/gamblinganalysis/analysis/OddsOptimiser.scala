@@ -1,6 +1,7 @@
 package gamblinganalysis.analysis
 
 import gamblinganalysis.odds.{Odd, OddsCollection}
+import gamblinganalysis.util.db.GameDetailsDBHandler
 
 /**
   * Created by misha on 10/02/16.
@@ -8,6 +9,12 @@ import gamblinganalysis.odds.{Odd, OddsCollection}
 object OddsOptimiser {
 
   private val defaultBetAmount = 100
+
+  def getMostOptimised = {
+    GameDetailsDBHandler.allGames.map(g => {
+      optimise(GameDetailsDBHandler.oddsForGame(g))
+    })
+  }
 
   /**
     * Get the best odds combination

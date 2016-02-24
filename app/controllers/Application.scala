@@ -1,6 +1,6 @@
 package controllers
 
-import gamblinganalysis.analysis.AggressiveSimulator
+import gamblinganalysis.analysis.{OddsOptimiser, AggressiveSimulator}
 import gamblinganalysis.retriever.GameRetriever
 import org.json4s._
 import org.json4s.jackson.JsonMethods
@@ -13,7 +13,7 @@ object Application extends Controller {
   }
 
   def bestOdds = Action {
-    val bestOdds = GameRetriever.getOptimisedOdds
+    val bestOdds = OddsOptimiser.getMostOptimised
 
     val json = JObject(List(
       "bestOdds" ->
