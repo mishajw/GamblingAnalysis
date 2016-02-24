@@ -54,5 +54,6 @@ CREATE TABLE odd (
   denominator     INTEGER,
   time            INTEGER,
   bookie_id       INTEGER REFERENCES bookie(id),
+  game_id         INTEGER REFERENCES game(id),
   outcome_id      INTEGER REFERENCES game_outcome(id)
 );
