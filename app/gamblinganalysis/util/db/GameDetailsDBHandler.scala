@@ -17,7 +17,7 @@ object GameDetailsDBHandler extends BaseDBHandler {
            SELECT id FROM game_outcome
            WHERE outcome = ${odd.outcome}
            AND game_id = $gameId
-         """.map(_.int("id")).single.apply()
+         """.map(_.int("id")).single.apply().get
 
     sql"""
          INSERT INTO odd(numerator, denominator, time, bookie_id, game_id, outcome_id)
@@ -28,7 +28,7 @@ object GameDetailsDBHandler extends BaseDBHandler {
             $bookieId,
             $gameId,
             $outcomeId)
-       """.update.apply()
+       """.updateAndReturnGeneratedKey().apply().toInt
   }
 
   def insertGame(game: Game): Int = {
@@ -37,7 +37,7 @@ object GameDetailsDBHandler extends BaseDBHandler {
     val gameId =
       sql"""
            INSERT INTO game(sport_id) VALUES ($sportId)
-         """.update.apply()
+         """.updateAndReturnGeneratedKey().apply().toInt
 
     log.info(s"Inserted game with ID: $gameId")
 
@@ -61,7 +61,7 @@ object GameDetailsDBHandler extends BaseDBHandler {
       case x =>
         sql"""
              INSERT INTO sport(title) VALUES (${sport.title})
-           """.update.apply()
+           """.updateAndReturnGeneratedKey().apply().toInt
     }
   }
 
@@ -76,7 +76,7 @@ object GameDetailsDBHandler extends BaseDBHandler {
       case x =>
         sql"""
              INSERT INTO bookie(name) VALUES (${bookie.name})
-           """.update.apply()
+           """.updateAndReturnGeneratedKey().apply().toInt
     }
   }
 }
