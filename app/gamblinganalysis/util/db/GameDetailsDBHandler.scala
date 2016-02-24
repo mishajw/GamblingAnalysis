@@ -1,6 +1,6 @@
 package gamblinganalysis.util.db
 
-import gamblinganalysis.odds.Odd
+import gamblinganalysis.odds.{OddsCollection, Odd}
 import gamblinganalysis.{Bookie, Sport, Game}
 import play.api.Logger
 import scalikejdbc._
@@ -100,8 +100,8 @@ object GameDetailsDBHandler extends BaseDBHandler {
             .list.apply()
   }
 
-  def oddsForGame(game: Game): Seq[Odd] = {
-    sql"""
+  def oddsForGame(game: Game): OddsCollection = {
+    val odds = sql"""
          SELECT O.numerator, O.denominator, O.time, B.name AS bookie, OC.outcome AS outcome
          FROM (
             SELECT *
@@ -114,6 +114,8 @@ object GameDetailsDBHandler extends BaseDBHandler {
          AND O.outcome_id = OC.id
        """.map(r => new Odd(r.int("numerator"), r.int("denominator"), r.string("outcome"), game, Bookie(r.string("bookie"))))
             .list.apply()
+
+    new OddsCollection(odds)
   }
 
   def getGameId(game: Game): Option[Int] = {
