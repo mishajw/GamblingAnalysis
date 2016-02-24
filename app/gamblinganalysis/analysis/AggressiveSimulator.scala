@@ -5,6 +5,7 @@ import gamblinganalysis.factory.{BookieFactory, UserFactory}
 import gamblinganalysis.odds.OddsCollection
 import gamblinganalysis.retriever.GameRetriever
 import gamblinganalysis.retriever.odds.OddsCheckerRetriever
+import gamblinganalysis.util.db.GameDetailsDBHandler
 import gamblinganalysis.util.exceptions.ParseException
 import gamblinganalysis.{bookies, users}
 import play.api.Logger
@@ -59,14 +60,17 @@ object AggressiveSimulator {
   }
 
   private def getAllOdds = {
-    GameRetriever.retrieve.flatMap(g => {
-      try {
-        Some(OddsCheckerRetriever.retrieve(g))
-      } catch {
-        case e: Exception => None
-        case e: ParseException => None
-      }
-    }).sortBy(-OddsOptimiser.optimise(_).roi)
+//    GameRetriever.retrieve.flatMap(g => {
+//      try {
+//        Some(OddsCheckerRetriever.retrieve(g))
+//      } catch {
+//        case e: Exception => None
+//        case e: ParseException => None
+//      }
+//    }).sortBy(-OddsOptimiser.optimise(_).roi)
+
+    GameDetailsDBHandler.allGames
+      .map(GameDetailsDBHandler.oddsForGame)
   }
 
   private def generateAccounts(amount: Int, money: BigDecimal): AccountsCollection = {
