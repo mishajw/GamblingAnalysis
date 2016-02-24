@@ -1,11 +1,11 @@
 CREATE TABLE user (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  name        TEXT
+  name        TEXT UNIQUE
 );
 
 CREATE TABLE bookie (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  name        TEXT
+  name        TEXT UNIQUE
 );
 
 CREATE TABLE account (
@@ -16,7 +16,8 @@ CREATE TABLE account (
 
 CREATE TABLE account_transaction (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  account_id  INTEGER REFERENCES account,
+  user_id     INTEGER REFERENCES account(user_id),
+  bookie_id   INTEGER REFERENCES account(bookie_id),
   amount      INTEGER
 );
 
@@ -34,7 +35,7 @@ CREATE TABLE arbitration_transactions (
 
 CREATE TABLE sport (
   id              INTEGER PRIMARY KEY AUTOINCREMENT,
-  title           TEXT
+  title           TEXT UNIQUE
 );
 
 CREATE TABLE game (
