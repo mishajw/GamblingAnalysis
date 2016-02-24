@@ -103,7 +103,12 @@ object GameDetailsDBHandler extends BaseDBHandler {
   def oddsForGame(game: Game): Seq[Odd] = {
     sql"""
          SELECT O.numerator, O.denominator, O.time, B.name AS bookie, OC.outcome AS outcome
-         FROM odd O, bookie B, game_outcome OC
+         FROM (
+            SELECT *
+            FROM odd
+            GROUP BY game_id, bookie_id, outcome_id
+            ORDER BY odd.time DESC
+         ) AS O, bookie B, game_outcome OC
          WHERE O.game_id = ${getGameId(game).get}
          AND O.bookie_id = B.id
          AND O.outcome_id = OC.id
