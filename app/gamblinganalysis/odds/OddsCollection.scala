@@ -1,6 +1,6 @@
 package gamblinganalysis.odds
 
-import gamblinganalysis.{Bookie, Game, GameOutcome}
+import gamblinganalysis.{Bookie, Game}
 import play.api.Logger
 
 class OddsCollection(val odds: Seq[Odd]) {
@@ -11,18 +11,18 @@ class OddsCollection(val odds: Seq[Odd]) {
   }
 
   def forGame(game: Game) = {
-    odds filter (_.gameOutcome.game == game)
+    odds filter (_.game == game)
   }
 
-  def forOutcome(outcome: GameOutcome) = {
-    odds filter (_.gameOutcome == outcome)
+  def forOutcome(outcome: String, game: Game) = {
+    odds filter (o => o.outcome == outcome && o.game == game)
   }
 
   def groupedOutcome() = {
     odds
-      .map(_.gameOutcome)
+      .map(o => (o.outcome, o.game))
       .distinct
-      .map { o => (o, forOutcome(o)) }
+      .map { case (o, g) => (o, forOutcome(o, g)) }
       .toMap
   }
 

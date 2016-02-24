@@ -5,7 +5,7 @@ import gamblinganalysis.analysis.{AggressiveSimulator, BuyingPlan, OddsOptimiser
 import gamblinganalysis.factory._
 import gamblinganalysis.odds.Odd
 import gamblinganalysis.retriever.GameRetriever
-import gamblinganalysis.retriever.odds.{OddsCheckerRetriever, SkybetRetriever}
+import gamblinganalysis.retriever.odds.{actors, OddsCheckerRetriever, SkybetRetriever}
 import gamblinganalysis.util.exceptions.ParseException
 import play.api.Logger
 
@@ -16,7 +16,7 @@ object Main {
   private val log = Logger(getClass)
 
   def main(args: Array[String]): Unit = {
-    runGameRetriever()
+    actors.start()
   }
 
   def runOddsChecker() = {
@@ -62,15 +62,15 @@ object Main {
 
     val plan = new BuyingPlan(Seq(
       (
-        new Odd(3, 1, GameOutcomeFactory get ("Win", game), bet365),
+        new Odd(3, 1, "Win", game, bet365),
         new Account(UserFactory get "Misha", BigDecimal(7), bet365)
       ),
       (
-        new Odd(2, 1, GameOutcomeFactory get ("Draw", game), bet365),
+        new Odd(2, 1, "Draw", game, bet365),
         new Account(UserFactory get "Hannah", BigDecimal(10), bet365)
       ),
       (
-        new Odd(2, 1, GameOutcomeFactory get ("Lose", game), bet365),
+        new Odd(2, 1, "Lose", game, bet365),
         new Account(UserFactory get "Jodie", BigDecimal(10), bet365)
       )
     ))

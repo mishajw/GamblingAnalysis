@@ -1,6 +1,5 @@
 package gamblinganalysis.analysis
 
-import gamblinganalysis.GameOutcome
 import gamblinganalysis.odds.{Odd, OddsCollection}
 
 /**
@@ -43,7 +42,7 @@ object OddsOptimiser {
     * @param odds odds to choose from
     * @return list of list of best odds
     */
-  def getSortedOdds(odds: OddsCollection): Map[GameOutcome, Seq[Odd]] = {
+  def getSortedOdds(odds: OddsCollection): Map[String, Seq[Odd]] = {
     val oddGroups = odds.groupedOutcome()
     oddGroups map { case (outcome, os) =>
       outcome -> os.sortBy(_.getProbability)

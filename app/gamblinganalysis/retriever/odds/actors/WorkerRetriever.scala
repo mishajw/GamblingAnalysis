@@ -16,5 +16,7 @@ class WorkerRetriever extends Actor {
       work.retrieve()
       log.debug(s"Done with work: $work")
       sender() ! DoneScraping(work)
+    case NoMoreWork() =>
+      log.debug("Told no more work")
   }
 }

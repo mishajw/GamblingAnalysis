@@ -11,6 +11,7 @@ package object actors {
   case class StartWorkers(work: Seq[OddsRetriever]) extends ActorCommunication
   case class DoneScraping(work: OddsRetriever) extends ActorCommunication
   case class ScrapingWork(work: OddsRetriever) extends ActorCommunication
+  case class NoMoreWork() extends ActorCommunication
 
   private val amountOfWorkers = 10
 

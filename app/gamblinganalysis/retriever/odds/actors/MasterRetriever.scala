@@ -20,13 +20,16 @@ class MasterRetriever(workerAmount: Int) extends Actor {
       work foreach (workQueue.enqueue(_))
 
       for (i <- 0 to workerAmount)
-        workerRouter ! ScrapingWork(nextWork)
+        workerRouter ! nextWork
       log.debug(s"Sent out work")
     case DoneScraping(work) =>
       log.debug(s"Worker done working with: $work")
       workQueue enqueue work
-      workerRouter ! ScrapingWork(nextWork)
+      workerRouter ! nextWork
   }
 
-  def nextWork = workQueue.dequeue()
+  def nextWork = workQueue.nonEmpty match {
+    case true => ScrapingWork(workQueue.dequeue())
+    case false => NoMoreWork()
+  }
 }

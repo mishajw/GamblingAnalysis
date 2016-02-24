@@ -1,7 +1,6 @@
 package gamblinganalysis.retriever.odds
 
-import gamblinganalysis.{Sport, Game}
-import gamblinganalysis.factory.{SportFactory, BookieFactory, GameFactory, GameOutcomeFactory}
+import gamblinganalysis.factory.{BookieFactory, GameFactory, SportFactory}
 import gamblinganalysis.odds.{Odd, OddsCollection}
 import org.jsoup.nodes.Element
 import play.api.Logger
@@ -62,16 +61,16 @@ object SkybetRetriever extends OddsRetriever {
           case Seq(regexOdds(w1n, w1d), regexOdds(dn, dd), regexOdds(w2n, w2d)) =>
             val game = GameFactory get (Set(t1, "Draw", t2), sport)
             Some(new OddsCollection(Seq(
-              new Odd(w1n.toInt, w1d.toInt, GameOutcomeFactory get (t1, game), source),
-              new Odd(dn.toInt, dd.toInt, GameOutcomeFactory get ("Draw", game), source),
-              new Odd(w2n.toInt, w2d.toInt, GameOutcomeFactory get (t2, game), source)
+              new Odd(w1n.toInt, w1d.toInt, t1, game, source),
+              new Odd(dn.toInt, dd.toInt, "Draw", game, source),
+              new Odd(w2n.toInt, w2d.toInt, t2, game, source)
             )))
           // Win/Lose
           case Seq(regexOdds(w1n, w1d), regexOdds(w2n, w2d)) =>
             val game = GameFactory get (Set(t1, t2), sport)
             Some(new OddsCollection(Seq(
-              new Odd(w1n.toInt, w1d.toInt, GameOutcomeFactory get (t1, game), source),
-              new Odd(w2n.toInt, w2d.toInt, GameOutcomeFactory get (t2, game), source)
+              new Odd(w1n.toInt, w1d.toInt, t1, game, source),
+              new Odd(w2n.toInt, w2d.toInt, t2, game, source)
             )))
           case x =>
             log.warn(s"Couldn't parse $x with teams $t1 and $t2")
