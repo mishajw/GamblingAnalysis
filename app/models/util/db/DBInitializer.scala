@@ -10,6 +10,9 @@ import scala.io.Source
   * Created by misha on 25/02/16.
   */
 object DBInitializer {
+  /**
+    * Fill the database with accounts from a JSON file
+    */
   def fillWithJson() = {
     val json = JsonParser.parse(Source.fromFile("res/json/start-up.json").mkString)
 

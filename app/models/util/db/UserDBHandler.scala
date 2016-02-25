@@ -12,6 +12,10 @@ object UserDBHandler extends BaseDBHandler {
 
   private val log = Logger(getClass)
 
+  /**
+    * @param user the user to insert
+    * @return the ID of the user
+    */
   def insertUser(user: User): Int = {
     val optId =
       sql"""
@@ -27,6 +31,10 @@ object UserDBHandler extends BaseDBHandler {
     }
   }
 
+  /**
+    * @param account the account to insert
+    * @return the ID of the account
+    */
   def insertAccount(account: Account): (Int, Int) = {
     val userId = insertUser(account.name)
     val bookieId = GameDetailsDBHandler.insertBookie(account.bookie)
@@ -53,6 +61,9 @@ object UserDBHandler extends BaseDBHandler {
     (userId, bookieId)
   }
 
+  /**
+    * @param plan the plan to insert
+    */
   def insertBuyingPlan(plan: BuyingPlan): Unit = {
     if (!plan.complete) {
       log.error(s"Tried to add incomplete plan: $plan")
@@ -91,6 +102,9 @@ object UserDBHandler extends BaseDBHandler {
     }
   }
 
+  /**
+    * @return the list of users from the database
+    */
   def users: Seq[User] = {
     sql"""
         SELECT name FROM user
@@ -99,6 +113,9 @@ object UserDBHandler extends BaseDBHandler {
       .apply()
   }
 
+  /**
+    * @return the list of accounts from the database
+    */
   def accounts: AccountsCollection = {
     val accounts = sql"""
         SELECT U.name AS user, B.name AS bookie, BAL.amount AS amount
@@ -118,6 +135,15 @@ object UserDBHandler extends BaseDBHandler {
     new AccountsCollection(accounts)
   }
 
+  /**
+    * @param bd big decimal in pound form
+    * @return an integer in pence form
+    */
   private def balanceToSql(bd: BigDecimal): Int = (bd.setScale(2, RoundingMode.DOWN) * 100).toInt
+
+  /**
+    * @param i an integer in pence form
+    * @return a big decimal in pound form
+    */
   private def balanceToBigDecimal(i: Int) = BigDecimal(i) / 100
 }

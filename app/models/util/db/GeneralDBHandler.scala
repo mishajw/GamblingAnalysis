@@ -7,11 +7,17 @@ import scala.io.Source
 
 object GeneralDBHandler extends BaseDBHandler {
 
+  /**
+    * Reset the database to have nothing in it
+    */
   def reset() = {
     dropAllTables()
     createAllTables()
   }
 
+  /**
+    * Drop all tables
+    */
   private def dropAllTables() = {
     val f = Source.fromFile(sqlFolder + "/drop_tables.sql")
     val rawStatements = f.mkString.split("\n")
@@ -23,6 +29,9 @@ object GeneralDBHandler extends BaseDBHandler {
     f.close()
   }
 
+  /**
+    * Create all tables
+    */
   private def createAllTables() = {
     val f = Source.fromFile(sqlFolder + "/create_tables.sql")
     val rawStatements = f.mkString.split("\n\n")
@@ -32,17 +41,5 @@ object GeneralDBHandler extends BaseDBHandler {
     }
 
     f.close()
-  }
-
-  def fillWithDefault() = {
-    bookies map (b =>
-      sql"""
-           INSERT INTO bookie(name) VALUES ($b)
-         """.update.apply())
-
-    users map (u =>
-      sql"""
-           INSERT INTO user(name) VALUES ($u)
-        """.update.apply())
   }
 }

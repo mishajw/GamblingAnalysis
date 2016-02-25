@@ -8,6 +8,10 @@ import scalikejdbc._
 object GameDetailsDBHandler extends BaseDBHandler {
   private val log = Logger(getClass)
 
+  /**
+    * @param odd the odd to insert
+    * @return the ID of the odd
+    */
   def insertOdd(odd: Odd): Int = {
     val gameId = insertGame(odd.game)
     val bookieId = insertBookie(odd.bookie)
@@ -32,6 +36,10 @@ object GameDetailsDBHandler extends BaseDBHandler {
        """.updateAndReturnGeneratedKey().apply().toInt
   }
 
+  /**
+    * @param game the game to insert
+    * @return the ID of the game
+    */
   def insertGame(game: Game): Int = {
     val sportId = insertSport(game.sport)
 
@@ -59,6 +67,10 @@ object GameDetailsDBHandler extends BaseDBHandler {
     }
   }
 
+  /**
+    * @param sport the sport to insert
+    * @return the ID of the sport
+    */
   def insertSport(sport: Sport): Int = {
     val optId =
       sql"""
@@ -74,6 +86,10 @@ object GameDetailsDBHandler extends BaseDBHandler {
     }
   }
 
+  /**
+    * @param bookie the bookie to insert
+    * @return the ID of the bookie
+    */
   def insertBookie(bookie: Bookie): Int = {
     val optId =
       sql"""
@@ -89,6 +105,9 @@ object GameDetailsDBHandler extends BaseDBHandler {
     }
   }
 
+  /**
+    * @return list of all games in the database
+    */
   def allGames: Seq[Game] = {
     sql"""
          SELECT GROUP_CONCAT(O.outcome) AS outcomes, S.title AS sport
@@ -100,10 +119,16 @@ object GameDetailsDBHandler extends BaseDBHandler {
             .list.apply()
   }
 
+  /**
+    * @return list of all odds in the database
+    */
   def allOdds: Seq[OddsCollection] = {
     allGames map oddsForGame
   }
 
+  /**
+    * @return list of all odds for a game
+    */
   def oddsForGame(game: Game): OddsCollection = {
     val odds = sql"""
          SELECT O.numerator, O.denominator, O.time, B.name AS bookie, OC.outcome AS outcome
@@ -122,6 +147,10 @@ object GameDetailsDBHandler extends BaseDBHandler {
     new OddsCollection(odds)
   }
 
+  /**
+    * @param game game to get ID for
+    * @return ID of the game
+    */
   def getGameId(game: Game): Option[Int] = {
     sql"""
          SELECT G.id

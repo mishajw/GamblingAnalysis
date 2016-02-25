@@ -1,17 +1,15 @@
 package models
 
-import models.util.db.{UserDBHandler, GeneralDBHandler}
+import models.util.db.{UserDBHandler, DBInitializer}
 import play.api.Logger
 
 object Main {
   private val log = Logger(getClass)
 
   def main(args: Array[String]): Unit = {
-    GeneralDBHandler.reset()
-
-    UserDBHandler.insertAccount(Account(User("Misha"), BigDecimal(10), Bookie("Bet 365")))
+    DBInitializer.fillWithJson()
     val accounts = UserDBHandler.accounts
 
-    println(accounts.accounts.mkString("\n"))
+    log.info(accounts.accounts.mkString("\n"))
   }
 }
