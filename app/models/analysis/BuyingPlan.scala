@@ -4,6 +4,7 @@ import models.odds.Odd
 import models.util.JsonConvertable
 import models.{Account, OddAccount, OddMoney, OddPair}
 import org.json4s._
+import org.json4s.native.JsonParser
 
 import scala.math.BigDecimal.RoundingMode
 
@@ -18,6 +19,7 @@ class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) ex
 
   /**
     * Take in only money
+ *
     * @param pairTuples money to put on each odd
     */
   def this(pairTuples: OddMoney) {
@@ -26,6 +28,7 @@ class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) ex
 
   /**
     * Take in only account
+ *
     * @param pairTuples account to use for each odd
     */
   def this(pairTuples: OddAccount) {
@@ -99,6 +102,7 @@ class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) ex
 
   /**
     * Percentage to a string
+ *
     * @param bd big decimal of percentage
     * @return percentage string
     */
@@ -106,6 +110,7 @@ class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) ex
 
   /**
     * Money to a string
+ *
     * @param bd big decimal of amount of money
     * @return money string
     */
@@ -113,6 +118,7 @@ class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) ex
 
   /**
     * List of money to a formatted string
+ *
     * @param bds the money list
     * @return the formatted money string
     */
@@ -120,12 +126,11 @@ class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) ex
 
   override def toJson = {
     JObject(List(
-      "odds" -> JArray(odds.toList.map(o => {
+      "pairs" -> JArray(pairs.toList.map({ op =>
         JObject(List(
-          "numerator" -> JInt(o.gains),
-          "denominator" -> JInt(o.base),
-          "bookie" -> JString(o.bookie.name),
-          "outcome" -> JString(o.outcome)
+          "odd" -> op.odd.toJson,
+          "money" -> JDecimal(op.money.getOrElse(0)),
+          "account" -> op.odd.toJson
         ))
       })),
       "roi" -> JDecimal(roi)

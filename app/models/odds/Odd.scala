@@ -1,11 +1,14 @@
 package models.odds
 
+import models.util.JsonConvertable
 import models.{Bookie, Game}
+import org.json4s.JsonAST.JObject
+import org.json4s._
 
 /**
   * Created by misha on 09/02/16.
   */
-class Odd(val gains: Int, val base: Int, val outcome: String, val game: Game, val bookie: Bookie) {
+class Odd(val gains: Int, val base: Int, val outcome: String, val game: Game, val bookie: Bookie) extends JsonConvertable {
   def getPossibilities(toBet: Int): (BigDecimal, BigDecimal) = {
     (((toBet.toDouble / base.toDouble) * gains.toDouble) + toBet.toDouble, -toBet.toDouble)
   }
@@ -28,6 +31,15 @@ class Odd(val gains: Int, val base: Int, val outcome: String, val game: Game, va
 
   def oddsString = {
     s"$gains/$base"
+  }
+
+  override def toJson: JObject = {
+    JObject(List(
+      "numerator" -> JInt(gains),
+      "denominator" -> JInt(base),
+      "bookie" -> JString(bookie.name),
+      "outcome" -> JString(outcome)
+    ))
   }
 
   override def toString: String =
