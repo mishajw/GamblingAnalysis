@@ -1,7 +1,7 @@
 package controllers
 
-import gamblinganalysis.analysis.{OddsOptimiser, AggressiveSimulator}
-import gamblinganalysis.retriever.GameRetriever
+import models.analysis.{OddsOptimiser, AggressiveSimulator}
+import models.retriever.GameRetriever
 import org.json4s._
 import org.json4s.jackson.JsonMethods
 import play.api.mvc._
