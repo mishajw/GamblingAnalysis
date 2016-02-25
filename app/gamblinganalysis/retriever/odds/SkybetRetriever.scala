@@ -2,6 +2,7 @@ package gamblinganalysis.retriever.odds
 
 import gamblinganalysis.factory.{BookieFactory, GameFactory, SportFactory}
 import gamblinganalysis.odds.{Odd, OddsCollection}
+import gamblinganalysis.retriever.odds.actors.WorkerRetriever
 import org.jsoup.nodes.Element
 import play.api.Logger
 
@@ -22,9 +23,9 @@ object SkybetRetriever extends OddsRetriever {
   private val selRow = ".live-rowgroup"
   private val selOdds = ".odds"
 
-  override def retrieve(): OddsCollection = {
+  override def retrieve(worker: WorkerRetriever): OddsCollection = {
     val url = baseUrl + sports.head
-    val html = getHtml(url)
+    val html = worker getUrl url
 
     val tables = getTables(html)
     val rows = tables.flatMap(t => {

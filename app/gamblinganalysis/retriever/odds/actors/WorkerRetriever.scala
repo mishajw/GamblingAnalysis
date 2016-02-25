@@ -2,6 +2,9 @@ package gamblinganalysis.retriever.odds.actors
 
 import akka.actor.Actor
 import gamblinganalysis.util.db.GameDetailsDBHandler
+import org.jsoup.Jsoup
+import org.openqa.selenium.{WebDriver, By}
+import org.openqa.selenium.firefox.FirefoxDriver
 import play.api.Logger
 
 /**
@@ -11,10 +14,16 @@ class WorkerRetriever extends Actor {
 
   private val log = Logger(getClass)
 
+  private val driver: WebDriver = {
+    val driver = new FirefoxDriver()
+    log.info("Driver initialised")
+    driver
+  }
+
   def receive = {
     case ScrapingWork(work) =>
       log.debug(s"Got work: $work")
-      val oddsCollection = work.retrieve()
+      val oddsCollection = work.retrieve(this)
 
       log.debug(s"Inserting ${oddsCollection.odds.size} into database")
       oddsCollection.odds.foreach(GameDetailsDBHandler.insertOdd)
@@ -23,5 +32,11 @@ class WorkerRetriever extends Actor {
       sender() ! DoneScraping(work)
     case NoMoreWork() =>
       log.debug("Told no more work")
+  }
+
+  def getUrl(url: String) = {
+    log.info(s"Told to get $url")
+    driver.get("https://sports.ladbrokes.com/en-gb/betting/tennis/")
+    Jsoup.parse(driver.getPageSource)
   }
 }
