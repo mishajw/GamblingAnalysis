@@ -1,6 +1,6 @@
 package gamblinganalysis.util.db
 
-import gamblinganalysis.accounts.Account
+import gamblinganalysis.accounts.{AccountsCollection, Account}
 import gamblinganalysis.analysis.BuyingPlan
 import gamblinganalysis.{Bookie, OddPair, User}
 import play.api.Logger
@@ -99,8 +99,8 @@ object UserDBHandler extends BaseDBHandler {
       .apply()
   }
 
-  def accounts: Seq[Account] = {
-    sql"""
+  def accounts: AccountsCollection = {
+    val accounts = sql"""
         SELECT U.name AS user, B.name AS bookie, BAL.amount AS amount
         FROM user U, account A, bookie B, (
           SELECT SUM(amount) AS amount, user_id, bookie_id
@@ -114,6 +114,8 @@ object UserDBHandler extends BaseDBHandler {
     """.map(r => new Account(User(r.string("user")), balanceToBigDecimal(r.int("amount")), Bookie(r.string("bookie"))))
       .list
       .apply()
+
+    new AccountsCollection(accounts)
   }
 
   private def balanceToSql(bd: BigDecimal): Int = (bd.setScale(2, RoundingMode.DOWN) * 100).toInt

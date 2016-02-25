@@ -1,46 +1,39 @@
 package gamblinganalysis.analysis
 
-import gamblinganalysis.accounts.{Account, AccountsCollection}
-import gamblinganalysis.factory.{BookieFactory, UserFactory}
+import gamblinganalysis.accounts.AccountsCollection
 import gamblinganalysis.odds.OddsCollection
-import gamblinganalysis.retriever.GameRetriever
-import gamblinganalysis.retriever.odds.OddsCheckerRetriever
-import gamblinganalysis.util.db.GameDetailsDBHandler
-import gamblinganalysis.util.exceptions.ParseException
-import gamblinganalysis.{bookies, users}
+import gamblinganalysis.util.db.{UserDBHandler, GameDetailsDBHandler}
 import play.api.Logger
 
 import scala.math.BigDecimal
-import scala.util.Random
 
 object AggressiveSimulator {
 
   private val log = Logger(getClass)
 
-  private val minimumAmount = BigDecimal(1)
+  private val minimumAmount = BigDecimal(-100)
 
-  def run(): Seq[BuyingPlan] = {
-    val allOdds: Seq[OddsCollection] = getAllOdds
+  def run(): Seq[BuyingPlan] =
+    run(GameDetailsDBHandler.allOdds, UserDBHandler.accounts)
 
-    val acc = 10
-    val money = acc * 10
+  def runWithPrint(allOdds: Seq[OddsCollection], allAccounts: AccountsCollection): Seq[BuyingPlan] = {
+    val allPlans = run(allOdds, allAccounts)
+    val profits = allPlans.map(_.profit)
 
-    if (money / 10 >= acc) {
-      val accountsCollection = generateAccounts(acc, money)
-      val allPlans = run(accountsCollection, allOdds)
-      val profits = allPlans.map(_.profit)
-
-      log.info(s"Accounts: $acc")
-      log.info(s"Money: $money")
+    log.info(s"Accounts: ${allAccounts.accounts.size}")
+    log.info(s"Money: ${allAccounts.totalMoney}")
+    if (profits.nonEmpty) {
       log.info(s"Profits: ${profits.mkString(", ")}")
       log.info(s"Total of ${profits.sum} across ${allPlans.size} arbs")
-      log.info(s"Return of ${(profits.sum / money) * 100}%")
+      log.info(s"Return of ${(profits.sum / allAccounts.totalMoney) * 100}%")
+    } else {
+      log.info("No profitable plan found.")
+    }
 
-      allPlans
-    } else Seq()
+    allPlans
   }
 
-  private def run(accountsCollection: AccountsCollection, odds: Seq[OddsCollection]): Seq[BuyingPlan] = {
+  def run(odds: Seq[OddsCollection], accountsCollection: AccountsCollection): Seq[BuyingPlan] = {
     odds.flatMap(oc => {
       accountsCollection.mostProfitable(oc) match {
         case Some(bestPlan) =>
@@ -57,38 +50,5 @@ object AggressiveSimulator {
         case None => None
       }
     })
-  }
-
-  private def getAllOdds = {
-//    GameRetriever.retrieve.flatMap(g => {
-//      try {
-//        Some(OddsCheckerRetriever.retrieve(g))
-//      } catch {
-//        case e: Exception => None
-//        case e: ParseException => None
-//      }
-//    }).sortBy(-OddsOptimiser.optimise(_).roi)
-
-    GameDetailsDBHandler.allGames
-      .map(GameDetailsDBHandler.oddsForGame)
-  }
-
-  private def generateAccounts(amount: Int, money: BigDecimal): AccountsCollection = {
-    if (money / 10 < amount) {
-      throw new IllegalArgumentException("Can't deposit less than £10 in each account.")
-    }
-
-    val accounts =
-      Stream.continually(bookies)
-        .flatten
-        .take(amount)
-        .map(b => {
-          new Account(
-            UserFactory get Random.shuffle(users).head,
-            money / amount,
-            BookieFactory get b)
-        })
-
-    new AccountsCollection(accounts)
   }
 }
