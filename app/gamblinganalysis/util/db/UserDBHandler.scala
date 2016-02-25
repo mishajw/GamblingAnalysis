@@ -1,8 +1,8 @@
 package gamblinganalysis.util.db
 
-import gamblinganalysis.accounts.{AccountsCollection, Account}
+import gamblinganalysis.accounts.AccountsCollection
 import gamblinganalysis.analysis.BuyingPlan
-import gamblinganalysis.{Bookie, OddPair, User}
+import gamblinganalysis.{Account, Bookie, OddPair, User}
 import play.api.Logger
 import scalikejdbc._
 

@@ -1,6 +1,6 @@
 package gamblinganalysis
 
-import gamblinganalysis.util.db.GeneralDBHandler
+import gamblinganalysis.util.db.{UserDBHandler, GeneralDBHandler}
 import play.api.Logger
 
 object Main {
@@ -8,5 +8,10 @@ object Main {
 
   def main(args: Array[String]): Unit = {
     GeneralDBHandler.reset()
+
+    UserDBHandler.insertAccount(Account(User("Misha"), BigDecimal(10), Bookie("Bet 365")))
+    val accounts = UserDBHandler.accounts
+
+    println(accounts.accounts.mkString("\n"))
   }
 }

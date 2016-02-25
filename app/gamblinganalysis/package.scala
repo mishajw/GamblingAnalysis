@@ -1,4 +1,3 @@
-import gamblinganalysis.accounts.Account
 import gamblinganalysis.odds.Odd
 
 package object gamblinganalysis {
@@ -7,6 +6,7 @@ package object gamblinganalysis {
   case class Game(outcomes: Set[String], sport: Sport)
   case class Sport(title: String)
   case class OddPair(odd: Odd, money: Option[BigDecimal], account: Option[Account])
+  case class Account(name: User, var amount: BigDecimal, bookie: Bookie)
 
   val bookies = Seq(
     "Totesport", "Winner", "Stan James", "Paddy Power", "BetBright", "Matchbook",

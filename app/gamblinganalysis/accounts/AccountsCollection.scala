@@ -1,6 +1,6 @@
 package gamblinganalysis.accounts
 
-import gamblinganalysis.Bookie
+import gamblinganalysis.{Account, Bookie}
 import gamblinganalysis.analysis.{BuyingPlan, OddsOptimiser}
 import gamblinganalysis.odds.{Odd, OddsCollection}
 

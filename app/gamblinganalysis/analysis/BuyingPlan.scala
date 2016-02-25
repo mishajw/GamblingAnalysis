@@ -1,9 +1,8 @@
 package gamblinganalysis.analysis
 
-import gamblinganalysis.accounts.Account
 import gamblinganalysis.odds.Odd
 import gamblinganalysis.util.JsonConvertable
-import gamblinganalysis.{OddPair, OddAccount, OddMoney}
+import gamblinganalysis.{Account, OddAccount, OddMoney, OddPair}
 import org.json4s._
 
 import scala.math.BigDecimal.RoundingMode
