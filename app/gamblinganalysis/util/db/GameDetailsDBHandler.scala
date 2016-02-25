@@ -100,6 +100,10 @@ object GameDetailsDBHandler extends BaseDBHandler {
             .list.apply()
   }
 
+  def allOdds: Seq[OddsCollection] = {
+    allGames map oddsForGame
+  }
+
   def oddsForGame(game: Game): OddsCollection = {
     val odds = sql"""
          SELECT O.numerator, O.denominator, O.time, B.name AS bookie, OC.outcome AS outcome
