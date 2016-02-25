@@ -3,7 +3,7 @@ package gamblinganalysis.retriever.odds.actors
 import akka.actor.Actor
 import gamblinganalysis.util.db.GameDetailsDBHandler
 import org.jsoup.Jsoup
-import org.openqa.selenium.{WebDriver, By}
+import org.openqa.selenium.WebDriver
 import org.openqa.selenium.firefox.FirefoxDriver
 import play.api.Logger
 
