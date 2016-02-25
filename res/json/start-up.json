@@ -1,0 +1,64 @@
+{
+  "accounts": [
+    {
+      "user": "Ali",
+      "bookie": "Bet 365",
+      "amount": 10.0
+    },
+    {
+      "user": "Harry",
+      "bookie": "Ladbrokes",
+      "amount": 10.0
+    },
+    {
+      "user": "Joe",
+      "bookie": "Paddy Power",
+      "amount": 10.0
+    },
+    {
+      "user": "Misha",
+      "bookie": "William Hill",
+      "amount": 10.0
+    },
+    {
+      "user": "Mona",
+      "bookie": "Sky Bet",
+      "amount": 10.0
+    },
+    {
+      "user": "Zoe",
+      "bookie": "888sport",
+      "amount": 10.0
+    },
+    {
+      "user": "Ali",
+      "bookie": "Netbet UK",
+      "amount": 10.0
+    },
+    {
+      "user": "Harry",
+      "bookie": "Bet Victor",
+      "amount": 10.0
+    },
+    {
+      "user": "Joe",
+      "bookie": "Sportingbet",
+      "amount": 10.0
+    },
+    {
+      "user": "Misha",
+      "bookie": "Bwin",
+      "amount": 10.0
+    },
+    {
+      "user": "Mona",
+      "bookie": "32Red Bet",
+      "amount": 10.0
+    },
+    {
+      "user": "Zoe",
+      "bookie": "Coral",
+      "amount": 10.0
+    }
+  ]
+}

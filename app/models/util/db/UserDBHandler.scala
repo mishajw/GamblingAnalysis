@@ -32,11 +32,11 @@ object UserDBHandler extends BaseDBHandler {
     val bookieId = GameDetailsDBHandler.insertBookie(account.bookie)
 
     val optId = sql"""
-         SELECT 1
+         SELECT user_id, bookie_id
          FROM account
          WHERE user_id = $userId
          AND bookie_id = $bookieId
-       """.map(_.int("id")).single.apply()
+       """.map(r => (r.int("user_id"), r.int("bookie_id"))).single.apply()
 
     if (optId.isEmpty) {
         sql"""
