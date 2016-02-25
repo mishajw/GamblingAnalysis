@@ -10,7 +10,6 @@ object GeneralDBHandler extends BaseDBHandler {
   def reset() = {
     dropAllTables()
     createAllTables()
-    fillWithDefault()
   }
 
   private def dropAllTables() = {
