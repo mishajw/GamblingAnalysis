@@ -1,14 +1,11 @@
 package models.analysis
 
 import models.odds.Odd
-import models.util.JsonConvertable
 import models.{Account, OddAccount, OddMoney, OddPair}
-import org.json4s._
-import org.json4s.native.JsonParser
 
 import scala.math.BigDecimal.RoundingMode
 
-class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) extends JsonConvertable {
+class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) {
 
   /**
     * Details of what to buy with that account
@@ -123,19 +120,6 @@ class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) ex
     * @return the formatted money string
     */
   private def parseMoneyList(bds: Seq[BigDecimal]) = bds.map(parseMoney).mkString(", ")
-
-  override def toJson = {
-    JObject(List(
-      "pairs" -> JArray(pairs.toList.map({ op =>
-        JObject(List(
-          "odd" -> op.odd.toJson,
-          "money" -> JDecimal(op.money.getOrElse(0)),
-          "account" -> op.odd.toJson
-        ))
-      })),
-      "roi" -> JDecimal(roi)
-    ))
-  }
 
   override def toString: String = {
     s"Outcomes:   ${odds.map(_.outcome).mkString(", ")}" +

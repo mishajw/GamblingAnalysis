@@ -1,6 +1,4 @@
 import models.odds.Odd
-import models.util.JsonConvertable
-import org.json4s.JsonAST.{JString, JDecimal, JObject}
 
 package object models {
   case class Bookie(name: String)
@@ -8,13 +6,7 @@ package object models {
   case class Game(outcomes: Set[String], sport: Sport)
   case class Sport(title: String)
   case class OddPair(odd: Odd, money: Option[BigDecimal], account: Option[Account])
-  case class Account(name: User, var amount: BigDecimal, bookie: Bookie) extends JsonConvertable {
-    override def toJson: JObject = JObject(List(
-      "user" -> JString(name.name),
-      "amount" -> JDecimal(amount),
-      "bookie" -> JString(bookie.name)
-    ))
-  }
+  case class Account(name: User, var amount: BigDecimal, bookie: Bookie)
 
   /**
     * Used so we can have multiple constructors that takes lists

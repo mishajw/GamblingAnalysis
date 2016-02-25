@@ -1,6 +1,5 @@
 package models.util.db
 
-import models.{bookies, users}
 import scalikejdbc._
 
 import scala.io.Source
