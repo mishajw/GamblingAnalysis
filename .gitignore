@@ -4,3 +4,4 @@ logs
 /conf/application.conf
 /project
 *.db
+*.db-journal
