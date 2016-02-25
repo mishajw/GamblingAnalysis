@@ -9,6 +9,8 @@ import gamblinganalysis.odds.{Odd, OddsCollection}
   */
 class AccountsCollection(val accounts: Seq[Account]) {
 
+  lazy val totalMoney = accounts.map(_.amount).sum
+
   def mostProfitable(odds: OddsCollection): Option[BuyingPlan] = {
     val sortedOdds: Seq[Seq[Odd]] =
       (OddsOptimiser.getSortedOdds(odds) map { case (_, os) => os }).toSeq
