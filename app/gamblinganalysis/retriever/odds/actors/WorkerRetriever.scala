@@ -36,7 +36,7 @@ class WorkerRetriever extends Actor {
 
   def getUrl(url: String) = {
     log.info(s"Told to get $url")
-    driver.get("https://sports.ladbrokes.com/en-gb/betting/tennis/")
+    driver.get(url)
     Jsoup.parse(driver.getPageSource)
   }
 }
