@@ -6,6 +6,7 @@ package object gamblinganalysis {
   case class User(name: String)
   case class Game(outcomes: Set[String], sport: Sport)
   case class Sport(title: String)
+  case class OddPair(odd: Odd, money: Option[BigDecimal], account: Option[Account])
 
   val bookies = Seq(
     "Totesport", "Winner", "Stan James", "Paddy Power", "BetBright", "Matchbook",

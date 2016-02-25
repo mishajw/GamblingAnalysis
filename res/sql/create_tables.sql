@@ -26,7 +26,7 @@ CREATE TABLE arbitration (
 );
 
 CREATE TABLE arbitration_transactions (
-  outcome         TEXT,
+  outcome         INTEGER REFERENCES game_outcome(id),
   bookie_id       INTEGER REFERENCES bookie(id),
   transaction_id  INTEGER REFERENCES account_transaction(id),
   arbitration_id  INTEGER REFERENCES arbitration(id),

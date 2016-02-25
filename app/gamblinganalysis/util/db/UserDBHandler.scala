@@ -1,12 +1,16 @@
 package gamblinganalysis.util.db
 
-import gamblinganalysis.{Bookie, Sport, User}
 import gamblinganalysis.accounts.Account
+import gamblinganalysis.analysis.BuyingPlan
+import gamblinganalysis.{Bookie, OddPair, User}
+import play.api.Logger
 import scalikejdbc._
 
 import scala.math.BigDecimal.RoundingMode
 
 object UserDBHandler extends BaseDBHandler {
+
+  private val log = Logger(getClass)
 
   def insertUser(user: User): Int = {
     val optId =
@@ -47,6 +51,44 @@ object UserDBHandler extends BaseDBHandler {
     }
 
     (userId, bookieId)
+  }
+
+  def insertBuyingPlan(plan: BuyingPlan): Unit = {
+    if (!plan.complete) {
+      log.error(s"Tried to add incomplete plan: $plan")
+      return
+    }
+
+    val arbId = sql"""
+         INSERT INTO arbitration DEFAULT VALUES
+       """.updateAndReturnGeneratedKey().apply().toInt
+
+    val gameId = GameDetailsDBHandler.insertGame(plan.game)
+
+    plan.pairs foreach { case OddPair(odd, Some(money), Some(account)) =>
+      val outcomeId =
+        sql"""
+             SELECT id
+             FROM game_outcome
+             WHERE game_id = $gameId
+             AND outcome = ${odd.outcome}
+           """.map(_.int("id")).single.apply()
+
+      val userId = insertUser(account.name)
+
+      val bookieId = GameDetailsDBHandler.insertBookie(account.bookie)
+
+      val transactionId =
+        sql"""
+             INSERT INTO account_transaction(user_id, bookie_id, amount)
+             VALUES ($userId, $bookieId, ${balanceToSql(money)})
+           """.update.apply()
+
+      sql"""
+           INSERT INTO arbitration_transactions(outcome, bookie_id, transaction_id, arbitration_id)
+           VALUES ($outcomeId, $bookieId, $transactionId, $arbId)
+         """.update.apply()
+    }
   }
 
   def users: Seq[User] = {

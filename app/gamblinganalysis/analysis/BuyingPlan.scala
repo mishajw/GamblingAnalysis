@@ -3,15 +3,12 @@ package gamblinganalysis.analysis
 import gamblinganalysis.accounts.Account
 import gamblinganalysis.odds.Odd
 import gamblinganalysis.util.JsonConvertable
-import gamblinganalysis.{OddAccount, OddMoney}
+import gamblinganalysis.{OddPair, OddAccount, OddMoney}
 import org.json4s._
 
 import scala.math.BigDecimal.RoundingMode
 
 class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) extends JsonConvertable {
-
-  case class OddPair(odd: Odd, money: Option[BigDecimal], account: Option[Account])
-
   val pairs: Seq[OddPair] = pairTuples map {
     case (odd, mon, acc) => OddPair(odd, mon, acc)
   }
@@ -33,6 +30,7 @@ class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) ex
 
   lazy val moneyComplete = money.size == maybeMoney.size
   lazy val accountsComplete = accounts.size == maybeAccounts.size
+  lazy val complete = moneyComplete && accountsComplete
 
   lazy val totalCost = money.sum
 
@@ -50,6 +48,15 @@ class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) ex
   }
 
   lazy val profit = possibleOutcomes.min
+
+  lazy val game = {
+    val set = odds.map(_.game).toSet
+    if (set.size == 1) {
+      set.head
+    } else {
+      throw new IllegalArgumentException("Buying plan spans different games")
+    }
+  }
 
   override def toString: String = {
     s"Outcomes:   ${odds.map(_.outcome).mkString(", ")}" +
