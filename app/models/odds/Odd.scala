@@ -32,4 +32,16 @@ class Odd(val gains: Int, val base: Int, val outcome: String, val game: Game, va
 
   override def toString: String =
     s"Odd($bookie - $outcome => $gains/$base)"
+
+  override def equals(obj: scala.Any): Boolean = {
+    obj match {
+      case odd: Odd =>
+        odd.gains == gains &&
+        odd.base == base &&
+        odd.outcome == outcome &&
+        odd.game == game &&
+        odd.bookie == bookie
+      case _ => false
+    }
+  }
 }

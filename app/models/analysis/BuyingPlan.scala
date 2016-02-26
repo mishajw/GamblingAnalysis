@@ -134,4 +134,12 @@ class BuyingPlan(pairTuples: Seq[(Odd, Option[BigDecimal], Option[Account])]) {
         s"\nAccounts:   ${accounts.map(_.name).mkString(",")}"
     }
   }
+
+  override def equals(obj: scala.Any): Boolean = {
+    obj match {
+      case plan: BuyingPlan =>
+        plan.pairs.toSet == pairs.toSet
+      case _ => false
+    }
+  }
 }
