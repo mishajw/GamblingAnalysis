@@ -6,6 +6,9 @@ import models.odds.Odd
 import org.json4s.JsonAST.{JDecimal, JString, JObject}
 import org.json4s._
 
+/**
+  * Convert objects to and from JSON
+  */
 object JsonConverter {
   def fromOdd(odd: Odd) = {
     JObject(List(
